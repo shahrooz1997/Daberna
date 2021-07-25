@@ -1,0 +1,121 @@
+.card-table {
+    background-color: #e5f348;
+    width: 19.9em;
+    height: 6.3em;
+    margin: auto;
+    border: 5px solid black;
+    table-layout: fixed;
+  }
+  
+  .card-table td,
+  .card-table th {
+    height: 2.1em;
+    vertical-align: middle;
+  }
+  
+  .card-table td {
+    width: 2.1em;
+    background-image: url("./cardcell.png");
+    background-repeat: no-repeat;
+    background-size: 2em 2em;
+    background-position: center;
+    border-width: 0.12em;
+    border-color: #333333;
+    border-style: dashed;
+    font-weight: bolder;
+    font-size: 2.5em;
+  }
+  
+  .card-table th {
+    border-width: 0.25em;
+    border-color: black;
+    border-style: solid;
+    width: 1.2em;
+    white-space: nowrap;
+    transform-origin: 100% 45%;
+    transform: rotate(90deg);
+    text-align: center;
+    font-size: 1.2em;
+  }
+  
+  .custom-header {
+    left: 50%;
+    width: 2em;
+  }
+  
+  /* From github */
+  .login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+    font-family: "Inter";
+  }
+  
+  .login__form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login__form > h1 {
+    font-size: 35px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    letter-spacing: -1px;
+  }
+  
+  .login__form > input {
+    min-width: 380px;
+    padding: 20px 0;
+    padding-left: 15px;
+    margin-bottom: 10px;
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.24);
+    font-family: "Inter";
+    border-radius: 2px;
+    font-size: 15px;
+  }
+  
+  .submit__btn {
+    padding: 17px 30px;
+    margin-top: 10px;
+    background: black;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-family: "Inter";
+    border-radius: 3px;
+  }
+  
+  .logout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: "Inter";
+  }
+  
+  .logout__button {
+    min-width: 300px;
+    padding: 17px 30px;
+    margin-top: 20px;
+    background: black;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-family: "Inter";
+    border-radius: 3px;
+  }
+  
+  .user__name {
+    color: #8d0ada;
+  }
+  
+  /* End from github */
+  
+  .myhome {
+    background-color: #ddd;
+  }
+  

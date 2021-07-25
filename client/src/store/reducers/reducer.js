@@ -1,4 +1,4 @@
-import * as actions from "./ActionTypes";
+import * as actions from "../actionTypes";
 
 const initialState = {
   cards: [],
