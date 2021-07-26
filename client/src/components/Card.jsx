@@ -1,3 +1,5 @@
+import "../styles/card.css";
+
 function convert_num_array(place_num_array) {
   // init the nums array to empty string
   let nums = [];
@@ -20,11 +22,11 @@ const Card = (props) => {
   return (
     <div className="mb-2">
       <div className="list-group">
-        <table className="table table-bordered card-table">
+        <table key={card_id.toString()} className="table table-bordered card-table">
           <tbody>
             <tr>
               <th className="text-center" rowSpan="3">
-                Card #{card_id}
+                Card #{card_id.toString()}
               </th>
               <td className="text-center">{nums[0]}</td>
               <td className="text-center">{nums[3]}</td>

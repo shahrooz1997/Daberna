@@ -11,15 +11,28 @@ const app = express();
 // Todo: use bcrypt to save password hashes instead of the passwords themselves
 // Watch https://www.youtube.com/watch?v=sTHWNPVNvm8
 
-app.use(
-  cors({
-    origin: "*",
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-    // credentials: true,
-    // methods: ["GET", "POST", "DELETE", "PUT"],
-  })
-);
 app.use(morgan("tiny"));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin,X-Requested-With,Content-Type,Accept"
+  );
+  next();
+});
+
+// app.use(
+//   cors({
+//     origin: "*",
+//     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+//     credentials: true,
+//     methods: ["GET", "POST", "DELETE", "PUT"],
+//   })
+// );
+
+
 
 app.use(express.json());
 

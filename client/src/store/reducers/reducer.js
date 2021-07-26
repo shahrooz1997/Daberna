@@ -2,6 +2,8 @@ import * as actions from "../actionTypes";
 
 const initialState = {
   cards: [],
+  selectedCardId: -1,
+  coveredIndexed: [],
 };
 
 const card_exists = (cards, card) => {

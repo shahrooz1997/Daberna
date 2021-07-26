@@ -21,3 +21,17 @@ export const getCards = (cards) => ({
     cards,
   },
 });
+
+export const selectCard = (id) => ({
+  type: actions.SELECT_CARD,
+  payload: {
+    id,
+  },
+});
+
+export const coverNumber = (index) => ({
+  type: actions.COVER_NUMBER,
+  payload: {
+    index,
+  },
+});

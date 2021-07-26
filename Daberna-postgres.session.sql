@@ -1,3 +1,6 @@
+-- Create DB
+CREATE DATABASE daberna;
+
 -- users
 -- DROP TABLE users;
 CREATE TABLE users(

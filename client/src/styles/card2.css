@@ -1,0 +1,50 @@
+.mycontainer {
+  /* margin: auto;
+  display: inline-block; */
+}
+
+.card-container {
+  background-color: #e5f348;
+  width: 40em;
+  height: 13em;
+  margin: auto;
+  border: 5px solid black;
+  /* table-layout: fixed; */
+  display: grid;
+  grid-template-columns: 1.5em auto;
+}
+
+.card-id {
+  border-width: 0.25em;
+  border-color: black;
+  border-style: solid;
+}
+
+.card-id > span {
+}
+
+.card-number {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  /* grid-gap: 0.12em; */
+  /* justify-items: center; */
+  /* align-items: center; */
+  /* align-content: space-around; */
+  /* grid-auto-columns: 150px; */
+  /* justify-content: space-evenly; */
+}
+
+.card-number-slot {
+  background-image: url("../assets/cardcell.png");
+  background-repeat: no-repeat;
+  background-size: 1.6em 1.6em;
+  background-position: center;
+  border-width: 0.08em;
+  border-color: #333333;
+  border-style: dashed;
+  /* padding: 1em; */
+  font-weight: bolder;
+  font-size: 2.5em;
+  /* width: 20px; */
+}

@@ -1,0 +1,45 @@
+.card > a,
+.card > a:hover,
+.card > a:active {
+  text-decoration: none;
+}
+
+.card-table {
+  background-color: #e5f348;
+  width: 19.9em;
+  height: 6.3em;
+  margin: auto;
+  border: 5px solid black;
+  table-layout: fixed;
+}
+
+.card-table td,
+.card-table th {
+  height: 2.1em;
+  vertical-align: middle;
+}
+
+.card-table td {
+  width: 2.1em;
+  background-image: url("../assets/cardcell.png");
+  background-repeat: no-repeat;
+  background-size: 2em 2em;
+  background-position: center;
+  border-width: 0.12em;
+  border-color: #333333;
+  border-style: dashed;
+  font-weight: bolder;
+  font-size: 2.5em;
+}
+
+.card-table th {
+  border-width: 0.25em;
+  border-color: black;
+  border-style: solid;
+  width: 1.2em;
+  white-space: nowrap;
+  transform-origin: 100% 45%;
+  transform: rotate(90deg);
+  text-align: center;
+  font-size: 1.2em;
+}

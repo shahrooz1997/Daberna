@@ -3,5 +3,5 @@ export const USER_SIGNUP = "USER_SIGNUP";
 export const USER_LOGOUT = "USER_LOGOUT";
 
 export const GET_CARDS = "GET_CARDS";
-
-export const GAME_CREATED = "USER_LOGIN";
+export const SELECT_CARD = "SELECT_CARD";
+export const COVER_NUMBER = "COVER_NUMBER";
