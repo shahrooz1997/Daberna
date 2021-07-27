@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Card from "../components/Card";
 import CardsFinder from "../apis/CardsFinder";
-import "../styles/card.css"
+import "../styles/card.css";
 
 const Cards = () => {
   const [cards, set_cards] = useState([]);

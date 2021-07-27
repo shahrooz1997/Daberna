@@ -4,6 +4,11 @@
   text-decoration: none;
 }
 
+.cover {
+  width: 1.5em;
+  height: 1.5em;
+}
+
 .card-table {
   background-color: #e5f348;
   width: 19.9em;

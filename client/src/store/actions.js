@@ -35,3 +35,10 @@ export const coverNumber = (index) => ({
     index,
   },
 });
+
+export const uncoverNumber = (index) => ({
+  type: actions.UNCOVER_NUMBER,
+  payload: {
+    index,
+  },
+});
