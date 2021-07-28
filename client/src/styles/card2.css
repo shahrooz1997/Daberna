@@ -68,6 +68,11 @@
 .cardElement div {
   font-weight: bolder;
   font-size: 25px;
+  color: #222;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
 }
 
 .cardElement img {

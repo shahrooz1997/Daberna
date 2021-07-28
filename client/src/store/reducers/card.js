@@ -3,7 +3,7 @@ import * as actions from "../actionTypes";
 const initialState = {
   cards: [],
   selectedCard: null,
-  coveredNumbers: [1, 2, 3, 4, 5],
+  coveredNumbers: [],
 };
 
 export default function reducer(state = initialState, action) {
@@ -26,6 +26,12 @@ export default function reducer(state = initialState, action) {
         coveredNumbers: state.coveredNumbers.filter(
           (n) => n !== action.payload.index
         ),
+      };
+
+    case actions.INITIALIZE:
+      return {
+        ...state,
+        selectedCard: null,
       };
 
     default:

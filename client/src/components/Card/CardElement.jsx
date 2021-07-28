@@ -3,31 +3,30 @@ import { useState } from "react";
 import "../../styles/card2.css";
 import { useSelector } from "react-redux";
 
+function isCovered(index, coveredIndecies) {
+  let covered = coveredIndecies.find((n) => index === n) || false;
+  if (covered !== false) {
+    covered = true;
+  }
+  return covered;
+}
+
 const CardElement = (props) => {
-  const { id, num } = props;
-  let { isCovered } = props;
+  const { num } = props;
   const isPlaying = useSelector((state) => state.card.selectedCard) !== null;
-  // const [covered, setCovered] = useState(isCovered);
-  const [content, setContent] = useState(
-    isCovered === true ? <img src={coverPic} alt={""} /> : num
-  );
+  const [covered, setCovered] = useState();
 
   const toggleCover = () => {
     if (isPlaying) {
-      isCovered = !isCovered;
-      setContent(isCovered === true ? <img src={coverPic} alt={""} /> : num);
+      setCovered(!covered);
     }
   };
 
   return (
     <div className="cardElement" onClick={toggleCover}>
-      <div>{content}</div>
+      <div>{covered ? <img src={coverPic} alt={""} /> : num}</div>
     </div>
   );
 };
-
-// CardElement.defaultProps = {
-//   id: 12,
-// };
 
 export default CardElement;

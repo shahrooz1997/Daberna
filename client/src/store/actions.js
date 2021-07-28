@@ -1,4 +1,4 @@
-import * as actions from "./ActionTypes";
+import * as actions from "./actionTypes";
 
 export const userLogin = (username, password) => ({
   type: actions.USER_LOGIN,
@@ -41,4 +41,9 @@ export const uncoverNumber = (index) => ({
   payload: {
     index,
   },
+});
+
+export const init = () => ({
+  type: actions.INITIALIZE,
+  payload: {},
 });
