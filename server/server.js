@@ -6,6 +6,10 @@ const morgan = require("morgan");
 const cors = require("cors");
 const db = require("./db");
 
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+
 const app = express();
 
 // Todo: use bcrypt to save password hashes instead of the passwords themselves
@@ -23,6 +27,21 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    key: "userId",
+    secret: fs.readFileSync("./secret.key"),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      expires: 3600 * 24,
+    },
+  })
+);
+
 // app.use(
 //   cors({
 //     origin: "*",
@@ -31,8 +50,6 @@ app.use((req, res, next) => {
 //     methods: ["GET", "POST", "DELETE", "PUT"],
 //   })
 // );
-
-
 
 app.use(express.json());
 
@@ -47,8 +64,19 @@ app.get("/", (req, res) => {
 
 // Session operations
 app.post("/api/v1/login", async (req, res) => {
-  const result = await db.query("SELECT * FROM users");
-  console.log(result);
+  try {
+    const result = await db.query(
+      "SELECT * FROM users where username=$1 and password=$2",
+      [req.body.username, req.body.password]
+    );
+    console.log(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+
   res.status(200).send("To be implemented");
 });
 
