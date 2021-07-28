@@ -1,50 +1,76 @@
-.mycontainer {
-  /* margin: auto;
-  display: inline-block; */
+.cards a,
+.cards a:hover,
+.cards a:active,
+.cards a:link,
+.cards a:visited {
+  text-decoration: none;
+  color: black;
 }
 
-.card-container {
+.card {
+  display: flex;
+  flex-direction: row;
   background-color: #e5f348;
-  width: 40em;
-  height: 13em;
-  margin: auto;
-  border: 5px solid black;
-  /* table-layout: fixed; */
-  display: grid;
-  grid-template-columns: 1.5em auto;
+  width: 479px;
+  /* justify-content: flex-end; */
+  padding: 3px 0px 3px 0px;
+  border: 2px solid black;
+  margin: 20px auto;
 }
 
-.card-id {
-  border-width: 0.25em;
-  border-color: black;
-  border-style: solid;
+.card > div:nth-child(1) {
+  text-align: center;
+  width: 25px;
+  border: 2px solid black;
+  border-style: none solid none none;
+  /* position: relative; */
 }
 
-.card-id > span {
+.card > div:nth-child(1) > div {
+  transform: rotate(-90deg);
+  transform-origin: 0 100%;
+  position: absolute;
+  line-height: 23px;
+  font-size: 14px;
+  height: 25px;
+  width: 150px;
+  left: 25px;
+  bottom: 0;
 }
 
-.card-number {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  /* grid-gap: 0.12em; */
-  /* justify-items: center; */
-  /* align-items: center; */
-  /* align-content: space-around; */
-  /* grid-auto-columns: 150px; */
-  /* justify-content: space-evenly; */
+.card > div:nth-child(2) {
+  display: flex;
+  width: 450px;
+  height: 150px;
 }
 
-.card-number-slot {
+.columnCard {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 150px;
+}
+
+.cardElement {
   background-image: url("../assets/cardcell.png");
   background-repeat: no-repeat;
-  background-size: 1.6em 1.6em;
+  background-size: 48px, 48px;
   background-position: center;
-  border-width: 0.08em;
   border-color: #333333;
   border-style: dashed;
-  /* padding: 1em; */
+  border-width: 2px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardElement div {
   font-weight: bolder;
-  font-size: 2.5em;
-  /* width: 20px; */
+  font-size: 25px;
+}
+
+.cardElement img {
+  width: 48px;
+  height: 48px;
 }

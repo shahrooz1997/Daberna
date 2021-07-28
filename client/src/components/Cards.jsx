@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Card from "../components/Card";
+import Card4 from "./Card4";
 import CardsFinder from "../apis/CardsFinder";
 import "../styles/card.css";
 
@@ -19,17 +19,13 @@ const Cards = () => {
 
   return (
     <div>
-      <div className="card">
+      <div className="cards">
         <h2 className="text-center">Cards</h2>
         {cards &&
           cards.map((card) => {
             return (
               <a key={card.id} href="/game">
-                <Card
-                  key={card.id}
-                  id={card.id}
-                  number_placement={card.numbers}
-                />
+                <Card4 key={card.id} id={card.id} nums={card.numbers} />
               </a>
             );
           })}

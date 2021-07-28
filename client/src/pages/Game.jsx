@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "../components/Header";
-import Card from "../components/Card";
+import Card4 from "../components/Card4";
 
 const Game = () => {
   const [number_placement, set_number_placement] = useState([
@@ -21,7 +21,10 @@ const Game = () => {
         <h2>46</h2>
       </div>
       <h2 className="text-center">Your cards</h2>
-      <Card id={11} number_placement={number_placement} />
+      <div className="cards">
+        <Card4 id={11} nums={number_placement} />
+        {/* <Card4 id={11} nums={number_placement} /> */}
+      </div>
     </div>
   );
 };
