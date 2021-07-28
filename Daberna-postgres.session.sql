@@ -18,6 +18,21 @@ CREATE TABLE users(
     UNIQUE(phone)
 );
 
+create function no_empty_string_in_email()
+returns TRIGGER
+language plpgsql
+as $$
+declare
+-- variable declaration
+begin
+    NEW.email = nullif(OLD.email, '');
+    return NEW;
+end; $$;
+
+CREATE TRIGGER null_email BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE no_empty_string_in_email();
+
+
+-- users
 INSERT INTO users (id, firstname, lastname, username, email, phone, password) VALUES (1, 'user1', 'Zr', 'user1', 'user1@gmail.com', '+12401111111', 'password1');
 INSERT INTO users (id, firstname, lastname, username, email, phone, password) VALUES (2, 'user2', 'Lb', 'user2', '', '+12402222222', 'password2');
 

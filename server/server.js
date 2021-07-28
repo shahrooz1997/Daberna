@@ -7,13 +7,9 @@ const cors = require("cors");
 const db = require("./db");
 
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
 const app = express();
-
-// Todo: use bcrypt to save password hashes instead of the passwords themselves
-// Watch https://www.youtube.com/watch?v=sTHWNPVNvm8
 
 app.use(morgan("tiny"));
 
@@ -27,17 +23,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
   session({
-    key: "userId",
-    secret: fs.readFileSync("./secret.key"),
+    // key: "userId",
+    store: new (require("connect-pg-simple")(session))(),
+    secret: process.env.EXPRESS_COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      expires: 3600 * 24,
+      maxAge: 1000 * 3600 * 24 * 30,
     },
   })
 );
@@ -54,11 +50,17 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  console.log("Send a message");
+  if (req.session.visitTimes) {
+    req.session.visitTimes++;
+  } else {
+    req.session.visitTimes = 1;
+  }
+
   res.status(202);
   res.json({
     status: "success",
     restuarant: "AA",
+    visitTimes: req.session.visitTimes,
   });
 });
 
