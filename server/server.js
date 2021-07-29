@@ -65,21 +65,41 @@ app.get("/", (req, res) => {
 });
 
 // Session operations
+app.get("/api/v1/login", async (req, res) => {
+  if (req.session.userid) {
+    res.status(200).json({
+      msg: "Login successful",
+    });
+  } else {
+    res.status(401).json({
+      msg: "Not logged in",
+    });
+  }
+});
+
 app.post("/api/v1/login", async (req, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM users where username=$1 and password=$2",
       [req.body.username, req.body.password]
     );
-    console.log(result);
+    if (result.rows.length != 1) {
+      res.status(401).json({
+        msg: "Wrong username or password",
+      });
+    } else {
+      console.log(result.rows);
+      req.session.userid = result.rows[0].id;
+      res.status(200).json({
+        msg: "Login successful",
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json({
       msg: "There has been an error on the server",
     });
   }
-
-  res.status(200).send("To be implemented");
 });
 
 app.post("/api/v1/signup", async (req, res) => {

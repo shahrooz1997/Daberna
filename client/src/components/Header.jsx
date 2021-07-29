@@ -1,92 +1,76 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import loginApi from "../apis/user";
+
 const Header = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [logedIn, setlogedIn] = useState(false);
+
+  axios.defaults.withCredentials = true;
+
+  useEffect(() => {
+    (async function () {
+      try {
+        const res = await loginApi.get("/");
+        setlogedIn(true);
+        console.log(res);
+      } catch (e) {
+        console.log(e);
+      }
+    })();
+  }, []);
+
+  const login = async () => {
+    try {
+      const res = await loginApi.post("/", {
+        username,
+        password,
+      });
+      setlogedIn(true);
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="/#">
-          <h2 className="text-warning">Daberna</h2>
-        </a>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mob-navbar"
-          aria-label="Toggle"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="mob-navbar">
-          <ul className="navbar-nav mb-2 mb-lg-0 mx-auto">
-            <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="/#">
-                Home
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/#">
-                About
-              </a>
-            </li>
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Our Services
-              </a>
-              <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li>
-                  <a className="dropdown-item" href="/#">
-                    Web designing
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/#">
-                    Web Development
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/#">
-                    SEO Analysis
-                  </a>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/#">
-                    Explore More
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/#">
-                Contact Us
-              </a>
-            </li>
-          </ul>
-          <form className="d-flex">
-            <input
-              className="form-control me-2"
-              type="text"
-              placeholder="Username"
-            />
-            <input
-              className="form-control me-2"
-              type="password"
-              placeholder="Password"
-            />
-            <button className="btn btn-warning" type="submit">
-              Login
-            </button>
-          </form>
-        </div>
+    <div className="headerContainer bg-dark">
+      <div>
+        <h2 className="brand text-warning">Daberna</h2>
+        <form>
+          <input
+            className="form-control me-2"
+            type="text"
+            placeholder="Username"
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
+          />
+          <input
+            className="form-control me-2"
+            type="password"
+            placeholder="Password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
+          <button
+            className="btn btn-primary"
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              login();
+            }}
+          >
+            Login
+          </button>
+          {/* <button className="btn btn-warning" type="submit">
+            Sign Up
+          </button> */}
+        </form>
       </div>
-    </nav>
+    </div>
   );
 };
 
