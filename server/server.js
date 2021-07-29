@@ -13,15 +13,23 @@ const app = express();
 
 app.use(morgan("tiny"));
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin,X-Requested-With,Content-Type,Accept"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//   res.header("Access-Control-Allow-Methods", "GET,POST");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin,X-Requested-With,Content-Type,Accept"
+//   );
+//   next();
+// });
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+    credentials: true,
+  })
+);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -32,8 +40,13 @@ app.use(
     secret: process.env.EXPRESS_COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
+
     cookie: {
       maxAge: 1000 * 3600 * 24 * 30,
+      // sameSite: "none",
+      // secure: true,
+      // httpOnly: true,
+      path: "/",
     },
   })
 );
@@ -68,6 +81,8 @@ app.get("/", (req, res) => {
 app.get("/api/v1/login", async (req, res) => {
   if (req.session.userid) {
     res.status(200).json({
+      username: req.session.username,
+      balance: req.session.userBalance,
       msg: "Login successful",
     });
   } else {
@@ -90,7 +105,11 @@ app.post("/api/v1/login", async (req, res) => {
     } else {
       console.log(result.rows);
       req.session.userid = result.rows[0].id;
+      req.session.username = result.rows[0].username;
+      req.session.userBalance = result.rows[0].balance;
       res.status(200).json({
+        username: req.session.username,
+        balance: req.session.userBalance,
         msg: "Login successful",
       });
     }

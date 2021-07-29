@@ -11,7 +11,7 @@ const Cards = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    (async () => {
+    const fetchCards = async () => {
       // dispatch(actions.init());
       try {
         const res = await CardsFinder.get("/");
@@ -20,8 +20,9 @@ const Cards = () => {
       } catch (err) {
         console.log(err);
       }
-    })();
-  }, []);
+    };
+    fetchCards();
+  }, [dispatch]);
 
   return (
     <div>

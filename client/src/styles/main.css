@@ -48,6 +48,23 @@ body {
   height: 40px;
 }
 
+.loading {
+  font-size: 22px;
+  color: #fff;
+  margin: 0px 20px 0px 0px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+.userInfo > div {
+}
+
 .custom-header {
   left: 50%;
   width: 2em;

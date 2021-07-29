@@ -19,7 +19,7 @@ const Game = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(actions.selectCard(id));
-  }, []);
+  }, [dispatch, id]);
 
   const cards = useSelector((state) => state.card.cards);
   const selectedCard = cards.find((card) => card.id === id);

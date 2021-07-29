@@ -1,11 +1,30 @@
 import axios from "axios";
 
-process.env.SERVER_ADDR = "192.168.1.5:3600";
+let serverAddress = "localhost:3600";
 
-export default axios.create({
-  baseURL: `http://192.168.1.5:3600/api/v1/login`,
-});
+let commonAttrs = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+};
 
-export const register = axios.create({
-  baseURL: `http://192.168.1.5:3600/api/v1/register`,
-});
+export const login = async (body) => {
+  const res = await axios.post(`http://${serverAddress}/api/v1/login/`, body, {
+    ...commonAttrs,
+  });
+  return res;
+};
+
+export const isLoggedIn = async () => {
+  const res = await axios.get(`http://${serverAddress}/api/v1/login/`, {
+    ...commonAttrs,
+  });
+  return res;
+};
+
+// export const register = async (body) => {
+//   const res = await axios.post(`http://${serverAddress}/api/v1/login/`, body, {
+//     ...commonAttrs,
+//   });
+// };

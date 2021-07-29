@@ -3,13 +3,13 @@ import { useState } from "react";
 import "../../styles/card2.css";
 import { useSelector } from "react-redux";
 
-function isCovered(index, coveredIndecies) {
-  let covered = coveredIndecies.find((n) => index === n) || false;
-  if (covered !== false) {
-    covered = true;
-  }
-  return covered;
-}
+// function isCovered(index, coveredIndecies) {
+//   let covered = coveredIndecies.find((n) => index === n) || false;
+//   if (covered !== false) {
+//     covered = true;
+//   }
+//   return covered;
+// }
 
 const CardElement = (props) => {
   const { num } = props;
