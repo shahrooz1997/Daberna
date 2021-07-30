@@ -27,7 +27,7 @@ const Cards = () => {
   return (
     <div>
       <div className="cards">
-        <h2 className="text-center">Cards</h2>
+        <h2 className="text-center">Select a card</h2>
         {cards &&
           cards.map((card) => {
             return (

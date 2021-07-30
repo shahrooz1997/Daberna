@@ -8,6 +8,7 @@ const db = require("./db");
 
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const Game = require("./game");
 
 const app = express();
 
@@ -191,6 +192,61 @@ app.get("/api/v1/cards/:id", async (req, res) => {
 // Todo: put cards
 // Todo: delete cards
 // Cards end
+
+// Game starts
+const games = [];
+function findGameById(gameid) {
+  console.log(games);
+  for (const game of games) {
+    if (game.id === gameid) {
+      return game;
+    }
+  }
+  throw Error("Game id invalid");
+}
+
+app.get("/api/v1/game", async (req, res) => {
+  if (req.session.userid) {
+    console.log(Game);
+    req.session.game = new Game();
+    req.session.gameOwner = true;
+    games.push(req.session.game);
+    req.session.game.addUser(req.session.userid);
+    console.log(req.session.game);
+    res.status(200).json({
+      gameid: req.session.game.id,
+      msg: "Game created",
+    });
+  } else {
+    res.status(401).json({
+      msg: "Not logged in",
+    });
+  }
+});
+
+app.post("/api/v1/game/join", async (req, res) => {
+  try {
+    if (req.session.userid) {
+      req.session.game = findGameById(req.body.gameid);
+      req.session.gameOwner = false;
+      req.session.game.addUser(req.session.userid);
+      console.log(req.session.game);
+      res.status(200).json({
+        gameid: req.session.game.id,
+        msg: "Joined the game",
+      });
+    } else {
+      res.status(401).json({
+        msg: "Not logged in",
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      msg: "An error happened on server",
+    });
+  }
+});
+// Game ends
 
 const server_port = process.env.SERVER_PORT || 3600;
 // https

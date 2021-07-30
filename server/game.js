@@ -1,14 +1,26 @@
-import shuffle from "./utils/shuffle";
+const shuffle = require("./utils/shuffle");
+const uid = require("./utils/uid");
 
 class Game {
   constructor() {
+    this.id = uid(5);
     this.nums = shuffle(0, 90);
     this.drawnIndex = 0;
     this.users = []; // An array of user ids participating in this game
   }
 
   addUser(userid) {
-    this.users.push(userid);
+    const userindex = this.users.indexOf(userid);
+    if (userindex === -1) {
+      this.users.push(userid);
+    }
+  }
+
+  removeUser(userid) {
+    const userindex = this.users.indexOf(userid);
+    if (userindex !== -1) {
+      this.users.splice(userindex, 1);
+    }
   }
 
   draw() {
@@ -24,3 +36,5 @@ class Game {
     return true;
   }
 }
+
+module.exports = Game;

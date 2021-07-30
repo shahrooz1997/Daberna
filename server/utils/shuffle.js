@@ -1,6 +1,6 @@
-import random from "random";
+const random = require("random");
 
-export default (min, max) => {
+const shuffle = (min, max) => {
   const array = [];
 
   for (let i = min; i <= max; i++) {
@@ -12,9 +12,10 @@ export default (min, max) => {
 
   for (let i = 0; i < arrLength; i++) {
     const randIndex = random.int(0, array.length - 1);
-    ret.push[array[randIndex]];
+    ret.push(array[randIndex]);
     array.splice(randIndex, 1);
   }
-
   return ret;
 };
+
+module.exports = shuffle;

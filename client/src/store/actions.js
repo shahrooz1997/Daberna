@@ -47,3 +47,17 @@ export const init = () => ({
   type: actions.INITIALIZE,
   payload: {},
 });
+
+export const createGame = (gameid) => ({
+  type: actions.CREATE_GAME,
+  payload: {
+    id: gameid,
+  },
+});
+
+export const joinGame = (gameid) => ({
+  type: actions.JOIN_GAME,
+  payload: {
+    id: gameid,
+  },
+});
