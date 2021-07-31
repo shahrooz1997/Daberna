@@ -26,3 +26,14 @@ export const joinGame = async (body) => {
   );
   return res;
 };
+
+export const startGame = async () => {
+  const res = await axios.post(
+    `http://${serverAddress}/api/v1/game/start`,
+    {},
+    {
+      ...commonAttrs,
+    }
+  );
+  return res;
+};

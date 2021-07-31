@@ -2,15 +2,22 @@ require("dotenv").config();
 const express = require("express");
 const fs = require("fs");
 const https = require("https");
+const http = require("http");
 const morgan = require("morgan");
 const cors = require("cors");
+const url = require("url");
+const querystring = require("querystring");
 const db = require("./db");
 
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const WebSocket = require("ws");
 const Game = require("./game");
 
 const app = express();
+
+const wsUsernameClients = {};
+const wsNumberClients = {};
 
 app.use(morgan("tiny"));
 
@@ -32,25 +39,25 @@ app.use(
   })
 );
 
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(
-  session({
-    // key: "userId",
-    store: new (require("connect-pg-simple")(session))(),
-    secret: process.env.EXPRESS_COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: false,
+const sessionParser = session({
+  // key: "userId",
+  store: new (require("connect-pg-simple")(session))(),
+  secret: process.env.EXPRESS_COOKIE_SECRET,
+  resave: false,
+  saveUninitialized: false,
 
-    cookie: {
-      maxAge: 1000 * 3600 * 24 * 30,
-      // sameSite: "none",
-      // secure: true,
-      // httpOnly: true,
-      path: "/",
-    },
-  })
-);
+  cookie: {
+    maxAge: 1000 * 3600 * 24 * 30,
+    // sameSite: "none",
+    // secure: true,
+    // httpOnly: true,
+    path: "/",
+  },
+});
+
+app.use(sessionParser);
 
 // app.use(
 //   cors({
@@ -209,6 +216,7 @@ app.get("/api/v1/game", async (req, res) => {
   if (req.session.userid) {
     console.log(Game);
     req.session.game = new Game();
+    req.session.gameid = req.session.game.id;
     req.session.gameOwner = true;
     games.push(req.session.game);
     req.session.game.addUser(req.session.userid);
@@ -217,6 +225,8 @@ app.get("/api/v1/game", async (req, res) => {
       gameid: req.session.game.id,
       msg: "Game created",
     });
+    console.log("BBBB");
+    // console.log(wsUsernameClients[req.session.username]);
   } else {
     res.status(401).json({
       msg: "Not logged in",
@@ -227,14 +237,50 @@ app.get("/api/v1/game", async (req, res) => {
 app.post("/api/v1/game/join", async (req, res) => {
   try {
     if (req.session.userid) {
+      req.session.gameid = req.body.gameid;
       req.session.game = findGameById(req.body.gameid);
       req.session.gameOwner = false;
+      console.log("req.session.game.addUser");
+      console.log(req.session.game.addUser);
       req.session.game.addUser(req.session.userid);
       console.log(req.session.game);
       res.status(200).json({
         gameid: req.session.game.id,
         msg: "Joined the game",
       });
+      for (const username in wsUsernameClients) {
+        wsUsernameClients[username].send(req.session.game.users.join());
+      }
+    } else {
+      res.status(401).json({
+        msg: "Not logged in",
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      msg: "An error happened on server",
+    });
+  }
+});
+
+app.post("/api/v1/game/start", async (req, res) => {
+  try {
+    if (req.session.userid) {
+      if (req.session.gameOwner) {
+        setInterval(() => {
+          // console.log(req.session.game.addUser);
+          const game = findGameById(req.session.gameid);
+          const num = game.draw();
+          // const num = req.session.game.draw();
+          for (const username in wsNumberClients) {
+            wsNumberClients[username].send(num);
+          }
+        }, 3000);
+      } else {
+        res.status(401).json({
+          msg: "Only owner can start the game",
+        });
+      }
     } else {
       res.status(401).json({
         msg: "Not logged in",
@@ -261,6 +307,88 @@ const server_port = process.env.SERVER_PORT || 3600;
 //     console.log("Server is up and listening on port " + server_port.toString());
 //   });
 
-app.listen(server_port, () => {
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ clientTracking: false, noServer: true });
+
+server.on("upgrade", (req, socket, head) => {
+  console.log("Parsing session from request...");
+
+  sessionParser(req, {}, () => {
+    if (!req.session.userid) {
+      socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+      socket.destroy();
+      return;
+    }
+
+    console.log("Session is parsed!");
+
+    wss.handleUpgrade(req, socket, head, (ws) => {
+      wss.emit("connection", ws, req);
+    });
+  });
+});
+
+wss.on("connection", (ws, req) => {
+  console.log(
+    `User ${req.session.username} connected to game ${req.session.game.id}`
+  );
+  urlInfo = url.parse(req.url, true, true);
+  if (urlInfo.pathname === "/usernames") {
+    wsUsernameClients[req.session.username] = ws;
+    wsUsernameClients[req.session.username].send(req.session.game.users.join());
+  }
+
+  if (urlInfo.pathname === "/number") {
+    wsNumberClients[req.session.username] = ws;
+  }
+
+  // for (const user of req.session.game.users) {
+  //   wsUsernameClients[req.session.username].send(user);
+  // }
+
+  ws.on("message", function (message) {
+    console.log(`Received message ${message} from user ${userId}`);
+  });
+
+  ws.on("close", function () {
+    delete wsUsernameClients[req.session.username];
+  });
+});
+
+// ws.on("connection", (ws, req) => {
+//   console.log("New websocket connection3");
+// while (true) {}
+
+// console.log("working = " + req.session.username);
+
+// console.log(req);
+
+// if (!req.session) {
+//   ws.send("Not authorized");
+//   return;
+// }
+
+// urlInfo = url.parse(req.url, true, true);
+// if (urlInfo.pathname === "/usernames") {
+//   wsUsernameClients[req.session.username] = ws;
+// }
+
+// wsUsernameClients[req.session.username].send("HIII");
+
+// queryInfo = querystring.parse(urlInfo);
+
+// console.log(urlInfo);
+
+// const { pathname } = req.url;
+// if (pathname === "users") {
+//   wsUsernameClients[]
+// }
+//   ws.on("message", (m) => {
+//     console.log("received: %s", m);
+//   });
+// ws.send("something");
+// });
+
+server.listen(server_port, () => {
   console.log("Server is up and listening on port " + server_port.toString());
 });
