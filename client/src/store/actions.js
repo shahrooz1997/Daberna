@@ -61,3 +61,10 @@ export const joinGame = (gameid) => ({
     id: gameid,
   },
 });
+
+export const addUser = (username) => ({
+  type: actions.ADD_USER,
+  payload: {
+    username,
+  },
+});

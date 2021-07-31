@@ -10,3 +10,4 @@ export const UNCOVER_NUMBER = "UNCOVER_NUMBER";
 
 export const CREATE_GAME = "CREATE_GAME";
 export const JOIN_GAME = "JOIN_GAME";
+export const ADD_USER = "ADD_USER";

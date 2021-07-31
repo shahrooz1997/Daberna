@@ -16,7 +16,8 @@ const Home = () => {
     try {
       console.log("clicked");
       const res = await gameApi.createGame();
-      setGameid(res.data.gameid);
+      // const res = { data: { gameid: "AAAAA" } };
+      // setGameid(res.data.gameid);
       console.log(res.data.gameid);
       dispatch(actions.createGame(res.data.gameid));
     } catch (e) {
