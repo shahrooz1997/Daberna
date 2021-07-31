@@ -9,15 +9,15 @@ class Game {
     this.users = []; // An array of user ids participating in this game
   }
 
-  addUser(userid) {
-    const userindex = this.users.indexOf(userid);
+  addUser(username) {
+    const userindex = this.users.indexOf(username);
     if (userindex === -1) {
-      this.users.push(userid);
+      this.users.push(username);
     }
   }
 
-  removeUser(userid) {
-    const userindex = this.users.indexOf(userid);
+  removeUser(username) {
+    const userindex = this.users.indexOf(username);
     if (userindex !== -1) {
       this.users.splice(userindex, 1);
     }

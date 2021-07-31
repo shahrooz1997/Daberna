@@ -13,6 +13,7 @@ const Game = () => {
   // const [playing, setPlaying] = useState(false);
   // const toggle = () => setPlaying(!playing);
   let id = useSelector((state) => state.card.selectedCard);
+  const gameOwner = useSelector((state) => state.game.gameOwner);
   const [luckyNum, setLuckyNum] = useState(-1);
   console.log("A" + id);
   const { id: pId } = useParams();
@@ -84,8 +85,19 @@ const Game = () => {
       </div>
       {/* <audio controls src={one} type="audio/mpeg"></audio> */}
       {/* <button onClick={toggle}>{playing ? "Pause" : "Play"}</button> */}
-      <div>
-        <button onClick={startGame}>Start game</button>
+      <div className="gamePageButtons">
+        {gameOwner ? (
+          <button className="btn btn-primary" onClick={startGame}>
+            Start game
+          </button>
+        ) : (
+          <button disabled className="btn btn-primary" onClick={startGame}>
+            Start game
+          </button>
+        )}
+        <button className="btn btn-success" onClick={startGame}>
+          I Win
+        </button>
       </div>
     </div>
   );

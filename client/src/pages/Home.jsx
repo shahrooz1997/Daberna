@@ -10,6 +10,7 @@ const Home = () => {
   const [gameid, setGameid] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [loggedIn, setloggedIn] = useState(false);
   // const gameid = useSelector((state) => state.game.gameid);
 
   const createGame = async () => {
@@ -40,40 +41,52 @@ const Home = () => {
 
   return (
     <div className="myhome">
-      <Header />
-      <div>
-        <button
-          className="btn btn-primary"
-          type="submit"
-          onClick={(e) => {
-            createGame();
-            history.push("/selectcard");
-            e.preventDefault();
-          }}
-        >
-          Create A Game
-        </button>
-        <input
-          className="form-control me-2"
-          type="text"
-          placeholder="Game id"
-          onChange={(e) => {
-            setGameid(e.target.value);
-            // setUsername(e.target.value);
-          }}
-        />
-        <button
-          className="btn btn-primary"
-          type="submit"
-          onClick={(e) => {
-            joinGame();
-            history.push("/selectcard");
-            e.preventDefault();
-          }}
-        >
-          Join A Game
-        </button>
-      </div>
+      <Header homeLogIn={setloggedIn} />
+      {loggedIn ? (
+        <div className="gameControl">
+          <div>
+            <button
+              className="btn btn-primary form-control me-2"
+              type="submit"
+              onClick={(e) => {
+                createGame();
+                history.push("/selectcard");
+                e.preventDefault();
+              }}
+            >
+              Create A Game
+            </button>
+          </div>
+          <div className="join">
+            <p>A friend has sent you a game id? Join here.</p>
+
+            <div>
+              <input
+                className="form-control me-2"
+                type="text"
+                placeholder="Game id"
+                onChange={(e) => {
+                  setGameid(e.target.value);
+                  // setUsername(e.target.value);
+                }}
+              />
+              <button
+                className="btn btn-primary form-control me-2"
+                type="submit"
+                onClick={(e) => {
+                  joinGame();
+                  history.push("/selectcard");
+                  e.preventDefault();
+                }}
+              >
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center m-3 p-3 fs-1">Please login to play</div>
+      )}
     </div>
   );
 };

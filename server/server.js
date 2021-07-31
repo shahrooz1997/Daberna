@@ -129,6 +129,18 @@ app.post("/api/v1/login", async (req, res) => {
   }
 });
 
+app.post("/api/v1/logout", async (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(400).send("Unable to log out");
+      } else {
+        res.send("Logout successful");
+      }
+    });
+  }
+});
+
 app.post("/api/v1/signup", async (req, res) => {
   try {
     const result_max_id = await db.query("SELECT max(id) as max_id FROM users");
@@ -219,7 +231,7 @@ app.get("/api/v1/game", async (req, res) => {
     req.session.gameid = req.session.game.id;
     req.session.gameOwner = true;
     games.push(req.session.game);
-    req.session.game.addUser(req.session.userid);
+    req.session.game.addUser(req.session.username);
     console.log(req.session.game);
     res.status(200).json({
       gameid: req.session.game.id,
@@ -240,9 +252,7 @@ app.post("/api/v1/game/join", async (req, res) => {
       req.session.gameid = req.body.gameid;
       req.session.game = findGameById(req.body.gameid);
       req.session.gameOwner = false;
-      console.log("req.session.game.addUser");
-      console.log(req.session.game.addUser);
-      req.session.game.addUser(req.session.userid);
+      req.session.game.addUser(req.session.username);
       console.log(req.session.game);
       res.status(200).json({
         gameid: req.session.game.id,
@@ -268,7 +278,6 @@ app.post("/api/v1/game/start", async (req, res) => {
     if (req.session.userid) {
       if (req.session.gameOwner) {
         setInterval(() => {
-          // console.log(req.session.game.addUser);
           const game = findGameById(req.session.gameid);
           const num = game.draw();
           // const num = req.session.game.draw();

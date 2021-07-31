@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import * as userApi from "../apis/user";
 
-const Header = () => {
+const Header = ({ homeLogIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setloggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    if (homeLogIn) {
+      homeLogIn(loggedIn);
+    }
+  }, [loggedIn]);
 
   useEffect(() => {
     (async function () {
@@ -32,6 +38,18 @@ const Header = () => {
       setloggedIn(true);
       setUsername(res.data.username);
       setBalance(res.data.balance);
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const res = await userApi.logout();
+      setloggedIn(false);
+      // setUsername(res.data.username);
+      // setBalance(res.data.balance);
       console.log(res);
     } catch (e) {
       console.log(e);
@@ -77,9 +95,23 @@ const Header = () => {
           </form>
         )}
         {!isLoading && loggedIn && (
-          <div className="userInfo">
-            <div>Username: {username}</div>
-            <div>Balance: ${balance}</div>
+          <div className="userInfoContainer">
+            <div className="userInfo">
+              <div>Username: {username}</div>
+              <div>Balance: ${balance}</div>
+            </div>
+            <div>
+              <button
+                className="form-control me-2 btn btn-danger"
+                type="submit"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logout();
+                }}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         )}
       </div>

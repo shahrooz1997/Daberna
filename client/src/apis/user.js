@@ -16,6 +16,17 @@ export const login = async (body) => {
   return res;
 };
 
+export const logout = async () => {
+  const res = await axios.post(
+    `http://${serverAddress}/api/v1/logout`,
+    {},
+    {
+      ...commonAttrs,
+    }
+  );
+  return res;
+};
+
 export const isLoggedIn = async () => {
   const res = await axios.get(`http://${serverAddress}/api/v1/login`, {
     ...commonAttrs,

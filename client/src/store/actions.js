@@ -1,18 +1,13 @@
 import * as actions from "./actionTypes";
 
-export const userLogin = (username, password) => ({
+export const userLogin = () => ({
   type: actions.USER_LOGIN,
-  payload: {
-    username: username,
-    password: password,
-  },
+  payload: {},
 });
 
-export const userLogout = (username) => ({
+export const userLogout = () => ({
   type: actions.USER_LOGOUT,
-  payload: {
-    username, // It is the same as username: username because both have the same name
-  },
+  payload: {},
 });
 
 export const getCards = (cards) => ({

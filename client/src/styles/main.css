@@ -48,6 +48,11 @@ body {
   height: 40px;
 }
 
+.userInfoContainer {
+  display: flex;
+  flex-direction: row;
+}
+
 .loading {
   font-size: 22px;
   color: #fff;
@@ -77,4 +82,40 @@ body {
 
 .luckynum {
   font-size: 40px;
+}
+
+.join {
+  display: flex;
+  flex-direction: column;
+}
+
+.join > p {
+  margin: 10px 0px 0px 0px;
+}
+
+.join > * {
+  margin: 2px 0px;
+}
+
+.join > div > * {
+  margin: 1px 0px;
+}
+
+.gameControl {
+  margin: 20px;
+}
+
+.gameControl > div {
+  margin: 20px auto;
+  width: 400px;
+}
+
+.gamePageButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.gamePageButtons > button {
+  flex-basis: 200px;
 }
