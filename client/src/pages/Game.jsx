@@ -7,13 +7,11 @@ import * as actions from "../store/actions";
 import "../styles/main.css";
 import Info from "../components/Info";
 import * as gameApi from "../apis/game";
-import one from "../assets/audio-numbers/1.wav";
 // import path from "path/posix";
 
 const Game = () => {
-  const [audio] = useState(new Audio(one));
-  const [playing, setPlaying] = useState(false);
-  const toggle = () => setPlaying(!playing);
+  // const [playing, setPlaying] = useState(false);
+  // const toggle = () => setPlaying(!playing);
   let id = useSelector((state) => state.card.selectedCard);
   const [luckyNum, setLuckyNum] = useState(-1);
   console.log("A" + id);
@@ -22,22 +20,23 @@ const Game = () => {
     id = pId;
   }
 
-  useEffect(() => {
-    const audioFiles = [];
-    for (let i = 0; i <= 90; i++) {
-      const pathBase = "../assets/audio-numbers/";
-      // audioFiles.push(path.join(pathBase, `${i}`));
-      audioFiles.push(`../assets/audio-numbers/${i}`);
-    }
-    audio.addEventListener("ended", () => setPlaying(false));
-    return () => {
-      audio.removeEventListener("ended", () => setPlaying(false));
-    };
-  }, []);
+  // useEffect(() => {
+  //   audio.addEventListener("ended", () => setPlaying(false));
+  //   return () => {
+  //     audio.removeEventListener("ended", () => setPlaying(false));
+  //   };
+  // }, []);
 
   useEffect(() => {
-    playing ? audio.play() : audio.pause();
-  }, [playing]);
+    const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
+    const audio = new Audio(audioPath);
+    audio.play();
+    // playing ? audio.play() : audio.pause();
+    audio.addEventListener("ended", () => audio.pause());
+    return () => {
+      audio.removeEventListener("ended", () => audio.pause());
+    };
+  }, [luckyNum]);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:3600/number");
@@ -83,12 +82,10 @@ const Game = () => {
       <div className="cards">
         <Card4 id={id} nums={nums} />
       </div>
-      <audio src={one} type="audio/mpeg"></audio>
+      {/* <audio controls src={one} type="audio/mpeg"></audio> */}
+      {/* <button onClick={toggle}>{playing ? "Pause" : "Play"}</button> */}
       <div>
-        <button controls onClick={startGame}>
-          Start game
-        </button>
-        <button onClick={toggle}>{playing ? "Pause" : "Play"}</button>
+        <button onClick={startGame}>Start game</button>
       </div>
     </div>
   );
