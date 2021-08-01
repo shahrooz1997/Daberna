@@ -29,6 +29,9 @@ const Game = () => {
   // }, []);
 
   useEffect(() => {
+    if (luckyNum == -1) {
+      return;
+    }
     const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
     const audio = new Audio(audioPath);
     audio.play();
