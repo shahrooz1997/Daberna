@@ -40,7 +40,9 @@ const Game = () => {
   }, [luckyNum]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3600/number");
+    const ws = new WebSocket(
+      `ws://${process.env.REACT_APP_SERVER_ADDRESS}/number`
+    );
     ws.onopen = () => {
       console.log("Connected to numbers WS");
     };

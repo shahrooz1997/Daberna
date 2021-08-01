@@ -45,8 +45,7 @@ for (let i = 1; i < 256; i++) {
 
 app.use(
   cors({
-    // origin: [...allowdOrigins, "http://localhost:3000"],
-    origin: [...allowdOrigins, "http://localhost:3000"],
+    origin: "http://localhost:3000",
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })

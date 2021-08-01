@@ -7,7 +7,9 @@ const Info = (props) => {
   //   const [ws, setWs] = useState({});
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3600/usernames");
+    const ws = new WebSocket(
+      `ws://${process.env.REACT_APP_SERVER_ADDRESS}/usernames`
+    );
     ws.onopen = () => {
       // on connecting, do nothing but log it to the console
       console.log("connected");
