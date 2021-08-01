@@ -21,6 +21,12 @@ const wsNumberClients = {};
 
 app.use(morgan("tiny"));
 
+app.use((req, res, next) => {
+  // const ip = req.socket;
+  console.log(req.socket.remoteAddress);
+  next();
+});
+
 // app.use((req, res, next) => {
 //   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
 //   res.header("Access-Control-Allow-Methods", "GET,POST");
@@ -31,9 +37,16 @@ app.use(morgan("tiny"));
 //   next();
 // });
 
+allowdOrigins = [];
+
+for (let i = 1; i < 256; i++) {
+  allowdOrigins.push(`http://192.168.1.${i}:3000`);
+}
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    // origin: [...allowdOrigins, "http://localhost:3000"],
+    origin: [...allowdOrigins, "http://localhost:3000"],
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })
@@ -242,6 +255,33 @@ app.get("/api/v1/game", async (req, res) => {
   } else {
     res.status(401).json({
       msg: "Not logged in",
+    });
+  }
+});
+
+app.get("/api/v1/game/win", async (req, res) => {
+  try {
+    if (req.session.userid) {
+      req.session.gameid = req.body.gameid;
+      req.session.game = findGameById(req.body.gameid);
+      req.session.gameOwner = false;
+      req.session.game.addUser(req.session.username);
+      console.log(req.session.game);
+      res.status(200).json({
+        gameid: req.session.game.id,
+        msg: "Joined the game",
+      });
+      for (const username in wsUsernameClients) {
+        wsUsernameClients[username].send(req.session.game.users.join());
+      }
+    } else {
+      res.status(401).json({
+        msg: "Not logged in",
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      msg: "An error happened on server",
     });
   }
 });

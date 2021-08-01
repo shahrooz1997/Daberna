@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let serverAddress = "localhost:3600";
+let serverAddress = process.env.REACT_APP_SERVER_ADDRESS;
 
 let commonAttrs = {
   headers: {
@@ -30,6 +30,17 @@ export const joinGame = async (body) => {
 export const startGame = async () => {
   const res = await axios.post(
     `http://${serverAddress}/api/v1/game/start`,
+    {},
+    {
+      ...commonAttrs,
+    }
+  );
+  return res;
+};
+
+export const winGame = async () => {
+  const res = await axios.get(
+    `http://${serverAddress}/api/v1/game/win`,
     {},
     {
       ...commonAttrs,

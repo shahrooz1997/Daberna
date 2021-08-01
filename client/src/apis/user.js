@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let serverAddress = "localhost:3600";
+let serverAddress = process.env.REACT_APP_SERVER_ADDRESS;
 
 let commonAttrs = {
   headers: {

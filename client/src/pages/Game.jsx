@@ -71,6 +71,19 @@ const Game = () => {
     }
   };
 
+  const winGame = async () => {
+    try {
+      console.log("clicked");
+      const res = await gameApi.winGame();
+      if (res.data.win) {
+      } else {
+        console.log(res.data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div style={{ backgroundColor: "#ddd" }}>
       <Header />
@@ -95,7 +108,7 @@ const Game = () => {
             Start game
           </button>
         )}
-        <button className="btn btn-success" onClick={startGame}>
+        <button className="btn btn-success" onClick={winGame}>
           I Win
         </button>
       </div>
