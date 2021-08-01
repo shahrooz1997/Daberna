@@ -21,6 +21,7 @@ const Home = () => {
       // setGameid(res.data.gameid);
       console.log(res.data.gameid);
       dispatch(actions.createGame(res.data.gameid));
+      history.push("/selectcard");
     } catch (e) {
       console.log(e);
     }
@@ -34,6 +35,7 @@ const Home = () => {
       });
       console.log("joined " + gameid);
       dispatch(actions.joinGame(gameid));
+      history.push("/selectcard");
     } catch (e) {
       console.log("e");
       console.log(e);
@@ -52,7 +54,6 @@ const Home = () => {
               type="submit"
               onClick={(e) => {
                 createGame();
-                history.push("/selectcard");
                 e.preventDefault();
               }}
             >
@@ -77,7 +78,6 @@ const Home = () => {
                 type="submit"
                 onClick={(e) => {
                   joinGame();
-                  history.push("/selectcard");
                   e.preventDefault();
                 }}
               >
