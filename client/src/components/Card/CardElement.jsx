@@ -1,4 +1,4 @@
-import coverPic from "../../assets/cover.png";
+// import coverPic from "../../assets/cover.png";
 import { useState } from "react";
 import "../../styles/card2.css";
 import { useSelector } from "react-redux";
@@ -24,7 +24,13 @@ const CardElement = (props) => {
 
   return (
     <div className="cardElement" onClick={toggleCover}>
-      <div>{covered ? <img src={coverPic} alt={""} /> : num}</div>
+      <div>
+        {covered ? (
+          <img src={`${process.env.PUBLIC_URL}/cover.png`} alt={""} />
+        ) : (
+          num
+        )}
+      </div>
     </div>
   );
 };

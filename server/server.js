@@ -45,7 +45,7 @@ for (let i = 1; i < 256; i++) {
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://192.168.1.5:3000"],
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })
@@ -227,7 +227,6 @@ app.get("/api/v1/cards/:id", async (req, res) => {
 // Game starts
 const games = [];
 function findGameById(gameid) {
-  console.log(games);
   for (const game of games) {
     if (game.id === gameid) {
       return game;
@@ -345,16 +344,44 @@ app.post("/api/v1/game/start", async (req, res) => {
     console.log(req.session);
     if (req.session.userid) {
       if (req.session.gameOwner) {
-        setInterval(() => {
-          const game = findGameById(req.session.gameid);
+        const game = findGameById(req.session.gameid);
+        game.numberInterval = setInterval(() => {
           const num = game.draw();
           // const num = req.session.game.draw();
           for (const username in wsNumberClients) {
             wsNumberClients[username].send(num);
           }
         }, 2500);
+        console.log(req.session.numberinterval);
         res.status(200).json({
           msg: "Game started",
+        });
+      } else {
+        res.status(401).json({
+          msg: "Only owner can start the game",
+        });
+      }
+    } else {
+      res.status(401).json({
+        msg: "Not logged in",
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      msg: "An error happened on server",
+    });
+  }
+});
+
+app.post("/api/v1/game/pause", async (req, res) => {
+  try {
+    console.log(req.session);
+    if (req.session.userid) {
+      if (req.session.gameOwner) {
+        const game = findGameById(req.session.gameid);
+        clearInterval(game.numberInterval);
+        res.status(200).json({
+          msg: "Game paused",
         });
       } else {
         res.status(401).json({

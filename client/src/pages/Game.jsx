@@ -44,22 +44,26 @@ const Game = () => {
   // }, []);
 
   useEffect(() => {
-    if (luckyNum === -1) {
-      return;
-    }
-    try {
-      // const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
-      // audio = new Audio(audioPath);
-      const audio = refAdudio.current[luckyNum];
-      audio.play();
-      // playing ? audio.play() : audio.pause();
-      audio.addEventListener("ended", () => audio.pause());
-      return () => {
-        audio.removeEventListener("ended", () => audio.pause());
-      };
-    } catch (e) {
-      console.log(e);
-    }
+    const playSound = async () => {
+      if (luckyNum === -1) {
+        return;
+      }
+      try {
+        // const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
+        // audio = new Audio(audioPath);
+        const audio = refAdudio.current[luckyNum];
+        await audio.play();
+        // playing ? audio.play() : audio.pause();
+        audio.addEventListener("ended", () => audio.pause());
+        return () => {
+          audio.removeEventListener("ended", () => audio.pause());
+        };
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    playSound();
   }, [luckyNum]);
 
   useEffect(() => {
@@ -119,6 +123,16 @@ const Game = () => {
       console.log(e);
     }
   };
+  const pauseGame = async () => {
+    try {
+      console.log("clicked");
+      setgameStarted(false);
+      const res = await gameApi.pauseGame();
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const winGame = async () => {
     try {
@@ -158,6 +172,13 @@ const Game = () => {
           onClick={startGame}
         >
           Start game
+        </button>
+        <button
+          disabled={!gameOwner || !gameStarted}
+          className="btn btn-primary"
+          onClick={pauseGame}
+        >
+          Pause game
         </button>
         <button className="btn btn-success" onClick={toggleSilent}>
           {silent ? <span>Unmute</span> : <span>Mute</span>}
