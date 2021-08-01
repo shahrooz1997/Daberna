@@ -16,12 +16,23 @@ const Game = () => {
   let id = useSelector((state) => state.card.selectedCard);
   const gameOwner = useSelector((state) => state.game.gameOwner);
   const [luckyNum, setLuckyNum] = useState(-1);
+  const [gameStarted, setgameStarted] = useState(false);
   const [silent, setSilent] = useState(true);
   console.log("A" + id);
   const { id: pId } = useParams();
   if (id === null) {
     id = pId;
   }
+
+  const cardSelected = async () => {
+    try {
+      const res = await gameApi.cardSelected({
+        cardid: id,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   // useEffect(() => {
   //   audio.addEventListener("ended", () => setPlaying(false));
@@ -60,6 +71,7 @@ const Game = () => {
   };
 
   useEffect(() => {
+    cardSelected();
     const ws = new WebSocket(
       `ws://${process.env.REACT_APP_SERVER_ADDRESS}/number`
     );
@@ -88,6 +100,7 @@ const Game = () => {
     try {
       console.log("clicked");
       const res = await gameApi.startGame();
+      setgameStarted(true);
     } catch (e) {
       console.log(e);
     }
@@ -98,7 +111,11 @@ const Game = () => {
       console.log("clicked");
       const res = await gameApi.winGame();
       if (res.data.win) {
+        console.log("You won");
+        alert("You won");
       } else {
+        console.log("Cheater!! (:");
+        alert("Cheater!! (:");
         console.log(res.data);
       }
     } catch (e) {
@@ -121,15 +138,13 @@ const Game = () => {
       {/* <audio controls src={one} type="audio/mpeg"></audio> */}
       {/* <button onClick={toggle}>{playing ? "Pause" : "Play"}</button> */}
       <div className="gamePageButtons">
-        {gameOwner ? (
-          <button className="btn btn-primary" onClick={startGame}>
-            Start game
-          </button>
-        ) : (
-          <button disabled className="btn btn-primary" onClick={startGame}>
-            Start game
-          </button>
-        )}
+        <button
+          disabled={!gameOwner || gameStarted}
+          className="btn btn-primary"
+          onClick={startGame}
+        >
+          Start game
+        </button>
         <button className="btn btn-success" onClick={toggleSilent}>
           {silent ? <span>Unmute</span> : <span>Mute</span>}
         </button>

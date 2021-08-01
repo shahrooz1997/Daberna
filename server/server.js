@@ -258,21 +258,26 @@ app.get("/api/v1/game", async (req, res) => {
   }
 });
 
-app.get("/api/v1/game/win", async (req, res) => {
+app.post("/api/v1/game/win", async (req, res) => {
   try {
-    if (req.session.userid) {
-      req.session.gameid = req.body.gameid;
-      req.session.game = findGameById(req.body.gameid);
-      req.session.gameOwner = false;
-      req.session.game.addUser(req.session.username);
+    console.log(req.session);
+    if (req.session.username) {
+      req.session.game = findGameById(req.session.gameid);
       console.log(req.session.game);
-      res.status(200).json({
-        gameid: req.session.game.id,
-        msg: "Joined the game",
-      });
-      for (const username in wsUsernameClients) {
-        wsUsernameClients[username].send(req.session.game.users.join());
+      if (req.session.game.checkWin(req.session.cardid)) {
+        res.status(200).json({
+          win: true,
+          msg: "You won",
+        });
+      } else {
+        res.status(203).json({
+          win: false,
+          msg: "You cheated",
+        });
       }
+      // for (const username in wsUsernameClients) {
+      //   wsUsernameClients[username].send(req.session.game.users.join());
+      // }
     } else {
       res.status(401).json({
         msg: "Not logged in",
@@ -312,8 +317,32 @@ app.post("/api/v1/game/join", async (req, res) => {
   }
 });
 
+app.post("/api/v1/game/cardselected", async (req, res) => {
+  try {
+    if (req.session.userid) {
+      console.log(
+        `selected card is ${req.body.cardid} for user ${req.session.username}`
+      );
+      req.session.cardid = req.body.cardid;
+      console.log(req.session.game);
+      res.status(200).json({
+        msg: "Your selection captured",
+      });
+    } else {
+      res.status(401).json({
+        msg: "Not logged in",
+      });
+    }
+  } catch (e) {
+    res.status(500).json({
+      msg: "An error happened on server",
+    });
+  }
+});
+
 app.post("/api/v1/game/start", async (req, res) => {
   try {
+    console.log(req.session);
     if (req.session.userid) {
       if (req.session.gameOwner) {
         setInterval(() => {
@@ -323,7 +352,7 @@ app.post("/api/v1/game/start", async (req, res) => {
           for (const username in wsNumberClients) {
             wsNumberClients[username].send(num);
           }
-        }, 3000);
+        }, 2500);
       } else {
         res.status(401).json({
           msg: "Only owner can start the game",
