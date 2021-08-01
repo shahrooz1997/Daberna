@@ -64,7 +64,7 @@ const sessionParser = session({
     maxAge: 1000 * 3600 * 24 * 30,
     // sameSite: "none",
     // secure: true,
-    // httpOnly: true,
+    httpOnly: false,
     path: "/",
   },
 });
@@ -363,6 +363,7 @@ server.on("upgrade", (req, socket, head) => {
 
   sessionParser(req, {}, () => {
     if (!req.session.userid) {
+      console.log("Session does not exist!");
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;

@@ -32,10 +32,12 @@ const Home = () => {
       const res = await gameApi.joinGame({
         gameid,
       });
-      console.log(gameid);
+      console.log("joined " + gameid);
       dispatch(actions.joinGame(gameid));
     } catch (e) {
+      console.log("e");
       console.log(e);
+      console.log("e2");
     }
   };
 
