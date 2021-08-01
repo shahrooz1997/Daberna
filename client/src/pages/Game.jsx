@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "../components/Header";
 import Card4 from "../components/Card4";
 import { useParams } from "react-router-dom";
@@ -9,10 +9,22 @@ import Info from "../components/Info";
 import * as gameApi from "../apis/game";
 // import path from "path/posix";
 
+function getAudios() {
+  const ret = [];
+  for (let i = 0; i <= 90; i++) {
+    const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${i}.wav`;
+    const audio = new Audio(audioPath);
+    audio.muted = false;
+    ret.push(audio);
+  }
+  return ret;
+}
+
 const Game = () => {
   // const [playing, setPlaying] = useState(false);
   // const toggle = () => setPlaying(!playing);
-  let audio;
+  const refAdudio = useRef(getAudios());
+  // let audio;
   let id = useSelector((state) => state.card.selectedCard);
   const gameOwner = useSelector((state) => state.game.gameOwner);
   const [luckyNum, setLuckyNum] = useState(-1);
@@ -23,16 +35,6 @@ const Game = () => {
   if (id === null) {
     id = pId;
   }
-
-  const cardSelected = async () => {
-    try {
-      const res = await gameApi.cardSelected({
-        cardid: id,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   // useEffect(() => {
   //   audio.addEventListener("ended", () => setPlaying(false));
@@ -46,9 +48,9 @@ const Game = () => {
       return;
     }
     try {
-      const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
-      audio = new Audio(audioPath);
-      audio.muted = silent;
+      // const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
+      // audio = new Audio(audioPath);
+      const audio = refAdudio.current[luckyNum];
       audio.play();
       // playing ? audio.play() : audio.pause();
       audio.addEventListener("ended", () => audio.pause());
@@ -58,19 +60,31 @@ const Game = () => {
     } catch (e) {
       console.log(e);
     }
-  }, [luckyNum, audio]);
+  }, [luckyNum]);
 
   useEffect(() => {
-    if (audio) {
-      audio.muted = silent;
+    // if (audio) {
+    //   audio.muted = silent;
+    // }
+    for (let i = 0; i <= 90; i++) {
+      refAdudio.current[i].muted = silent;
     }
-  }, [silent, audio]);
+  }, [silent]);
 
   const toggleSilent = () => {
     setSilent(!silent);
   };
 
   useEffect(() => {
+    const cardSelected = async () => {
+      try {
+        const res = await gameApi.cardSelected({
+          cardid: id,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
     cardSelected();
     const ws = new WebSocket(
       `ws://${process.env.REACT_APP_SERVER_ADDRESS}/number`
@@ -83,7 +97,7 @@ const Game = () => {
         setLuckyNum(e.data);
       }
     };
-  }, []);
+  }, [id]);
 
   console.log("B" + id);
 
@@ -99,8 +113,8 @@ const Game = () => {
   const startGame = async () => {
     try {
       console.log("clicked");
-      const res = await gameApi.startGame();
       setgameStarted(true);
+      const res = await gameApi.startGame();
     } catch (e) {
       console.log(e);
     }

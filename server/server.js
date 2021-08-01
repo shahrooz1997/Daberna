@@ -353,6 +353,9 @@ app.post("/api/v1/game/start", async (req, res) => {
             wsNumberClients[username].send(num);
           }
         }, 2500);
+        res.status(200).json({
+          msg: "Game started",
+        });
       } else {
         res.status(401).json({
           msg: "Only owner can start the game",
