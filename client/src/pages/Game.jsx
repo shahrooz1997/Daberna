@@ -11,19 +11,19 @@ import * as gameApi from "../apis/game";
 
 function getAudios() {
   const ret = [];
-  for (let i = 0; i <= 90; i++) {
-    const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${i}.wav`;
-    const audio = new Audio(audioPath);
-    audio.muted = false;
-    ret.push(audio);
-  }
+  // for (let i = 0; i <= 90; i++) {
+  //   const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${i}.wav`;
+  //   const audio = new Audio(audioPath);
+  //   audio.muted = false;
+  //   ret.push(audio);
+  // }
   return ret;
 }
 
 const Game = () => {
   // const [playing, setPlaying] = useState(false);
   // const toggle = () => setPlaying(!playing);
-  const refAdudio = useRef(getAudios());
+  // const refAdudio = useRef(getAudios());
   // let audio;
   let id = useSelector((state) => state.card.selectedCard);
   const gameOwner = useSelector((state) => state.game.gameOwner);
@@ -43,37 +43,37 @@ const Game = () => {
   //   };
   // }, []);
 
-  useEffect(() => {
-    const playSound = async () => {
-      if (luckyNum === -1) {
-        return;
-      }
-      try {
-        // const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
-        // audio = new Audio(audioPath);
-        const audio = refAdudio.current[luckyNum];
-        await audio.play();
-        // playing ? audio.play() : audio.pause();
-        audio.addEventListener("ended", () => audio.pause());
-        return () => {
-          audio.removeEventListener("ended", () => audio.pause());
-        };
-      } catch (e) {
-        console.log(e);
-      }
-    };
+  // useEffect(() => {
+  //   const playSound = async () => {
+  //     if (luckyNum === -1) {
+  //       return;
+  //     }
+  //     try {
+  //       // const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
+  //       // audio = new Audio(audioPath);
+  //       const audio = refAdudio.current[luckyNum];
+  //       await audio.play();
+  //       // playing ? audio.play() : audio.pause();
+  //       audio.addEventListener("ended", () => audio.pause());
+  //       return () => {
+  //         audio.removeEventListener("ended", () => audio.pause());
+  //       };
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
 
-    playSound();
-  }, [luckyNum]);
+  //   playSound();
+  // }, [luckyNum]);
 
-  useEffect(() => {
-    // if (audio) {
-    //   audio.muted = silent;
-    // }
-    for (let i = 0; i <= 90; i++) {
-      refAdudio.current[i].muted = silent;
-    }
-  }, [silent]);
+  // useEffect(() => {
+  //   // if (audio) {
+  //   //   audio.muted = silent;
+  //   // }
+  //   for (let i = 0; i <= refAdudio.current.length; i++) {
+  //     refAdudio.current[i].muted = silent;
+  //   }
+  // }, [silent]);
 
   const toggleSilent = () => {
     setSilent(!silent);

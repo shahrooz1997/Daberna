@@ -24,6 +24,9 @@ class Game {
   }
 
   draw() {
+    if (this.drawnIndex >= this.nums.length) {
+      return -1;
+    }
     return this.nums[this.drawnIndex++];
   }
 

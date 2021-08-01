@@ -45,7 +45,11 @@ for (let i = 1; i < 256; i++) {
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://192.168.1.5:3000"],
+    origin: [
+      "http://34.133.211.59:3000",
+      "http://localhost:3000",
+      "http://192.168.1.5:3000",
+    ],
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })
@@ -227,16 +231,24 @@ app.get("/api/v1/cards/:id", async (req, res) => {
 // Game starts
 const games = [];
 function findGameById(gameid) {
+  console.log(games);
   for (const game of games) {
     if (game.id === gameid) {
       return game;
     }
   }
-  throw Error("Game id invalid");
+  return null;
+  // throw Error("Game id invalid");
 }
 
 app.get("/api/v1/game", async (req, res) => {
   if (req.session.userid) {
+    if (req.session.gameid) {
+      const game = findGameById(req.session.gameid);
+      if (game !== null && game.numberInterval) {
+        clearInterval(game.numberInterval);
+      }
+    }
     console.log(Game);
     req.session.game = new Game();
     req.session.gameid = req.session.game.id;
@@ -347,12 +359,14 @@ app.post("/api/v1/game/start", async (req, res) => {
         const game = findGameById(req.session.gameid);
         game.numberInterval = setInterval(() => {
           const num = game.draw();
+          if (num == -1) {
+            clearInterval(game.numberInterval);
+          }
           // const num = req.session.game.draw();
           for (const username in wsNumberClients) {
             wsNumberClients[username].send(num);
           }
         }, 2500);
-        console.log(req.session.numberinterval);
         res.status(200).json({
           msg: "Game started",
         });
