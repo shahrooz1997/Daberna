@@ -12,7 +12,7 @@ const Header = ({ homeLogIn }) => {
     if (homeLogIn) {
       homeLogIn(loggedIn);
     }
-  }, [loggedIn]);
+  }, [homeLogIn, loggedIn]);
 
   useEffect(() => {
     (async function () {

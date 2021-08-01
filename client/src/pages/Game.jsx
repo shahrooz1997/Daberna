@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Card4 from "../components/Card4";
 import { useParams } from "react-router-dom";
@@ -12,9 +12,11 @@ import * as gameApi from "../apis/game";
 const Game = () => {
   // const [playing, setPlaying] = useState(false);
   // const toggle = () => setPlaying(!playing);
+  let audio;
   let id = useSelector((state) => state.card.selectedCard);
   const gameOwner = useSelector((state) => state.game.gameOwner);
   const [luckyNum, setLuckyNum] = useState(-1);
+  const [silent, setSilent] = useState(true);
   console.log("A" + id);
   const { id: pId } = useParams();
   if (id === null) {
@@ -29,18 +31,33 @@ const Game = () => {
   // }, []);
 
   useEffect(() => {
-    if (luckyNum == -1) {
+    if (luckyNum === -1) {
       return;
     }
-    const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
-    const audio = new Audio(audioPath);
-    audio.play();
-    // playing ? audio.play() : audio.pause();
-    audio.addEventListener("ended", () => audio.pause());
-    return () => {
-      audio.removeEventListener("ended", () => audio.pause());
-    };
-  }, [luckyNum]);
+    try {
+      const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
+      audio = new Audio(audioPath);
+      audio.muted = silent;
+      audio.play();
+      // playing ? audio.play() : audio.pause();
+      audio.addEventListener("ended", () => audio.pause());
+      return () => {
+        audio.removeEventListener("ended", () => audio.pause());
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  }, [luckyNum, audio]);
+
+  useEffect(() => {
+    if (audio) {
+      audio.muted = silent;
+    }
+  }, [silent, audio]);
+
+  const toggleSilent = () => {
+    setSilent(!silent);
+  };
 
   useEffect(() => {
     const ws = new WebSocket(
@@ -113,6 +130,9 @@ const Game = () => {
             Start game
           </button>
         )}
+        <button className="btn btn-success" onClick={toggleSilent}>
+          {silent ? <span>Unmute</span> : <span>Mute</span>}
+        </button>
         <button className="btn btn-success" onClick={winGame}>
           I Win
         </button>
