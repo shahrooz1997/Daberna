@@ -28,6 +28,7 @@ const Game = () => {
   let id = useSelector((state) => state.card.selectedCard);
   const gameOwner = useSelector((state) => state.game.gameOwner);
   const [luckyNum, setLuckyNum] = useState(-1);
+  const [luckyNums, setLuckyNums] = useState(["Start the game"]);
   const [gameStarted, setgameStarted] = useState(false);
   const [silent, setSilent] = useState(true);
   console.log("A" + id);
@@ -103,6 +104,44 @@ const Game = () => {
     };
   }, [id]);
 
+  useEffect(() => {
+    const makeLuckyNumsArray = () => {
+      if (luckyNum === -1) {
+        if (gameStarted) {
+          setLuckyNums(["Done"]);
+        } else {
+          setLuckyNums(["Start the game"]);
+        }
+      } else {
+        let newLuckyNums = [];
+        let oldLuckyNums = [];
+        if (
+          !(
+            (luckyNums.length !== 0 && luckyNums[0] === "Start the game") ||
+            luckyNums[0] === "Done"
+          )
+        ) {
+          console.log("AAA");
+          oldLuckyNums = luckyNums;
+        }
+        if (oldLuckyNums.length < 3) {
+          console.log("BBB");
+          newLuckyNums = [...oldLuckyNums];
+        } else {
+          for (let i = 1; i < oldLuckyNums.length; i++) {
+            console.log("CCC");
+            newLuckyNums.push(oldLuckyNums[i]);
+          }
+        }
+
+        newLuckyNums.push(luckyNum);
+        setLuckyNums(newLuckyNums);
+        console.log(newLuckyNums);
+      }
+    };
+    makeLuckyNumsArray();
+  }, [luckyNum]);
+
   console.log("B" + id);
 
   const dispatch = useDispatch();
@@ -157,7 +196,16 @@ const Game = () => {
       <Info />
       <div className="text-center mb-3">
         <h4>Lucky number</h4>
-        <h2 className="luckynum">{luckyNum}</h2>
+        <h2 className="luckynum">
+          {luckyNums.map((num, index, array) => {
+            return (
+              <span>
+                {num}
+                {index !== array.length - 1 ? "," : ""}{" "}
+              </span>
+            );
+          })}
+        </h2>
       </div>
       {/* <h2 className="text-center">Your cards</h2> */}
       <div className="cards">
