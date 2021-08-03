@@ -357,6 +357,14 @@ app.post("/api/v1/game/start", async (req, res) => {
     if (req.session.userid) {
       if (req.session.gameOwner) {
         const game = findGameById(req.session.gameid);
+        const num = game.draw();
+        if (num == -1) {
+          clearInterval(game.numberInterval);
+        }
+        // const num = req.session.game.draw();
+        for (const username in wsNumberClients) {
+          wsNumberClients[username].send(num);
+        }
         game.numberInterval = setInterval(() => {
           const num = game.draw();
           if (num == -1) {
