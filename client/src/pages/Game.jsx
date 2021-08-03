@@ -166,20 +166,23 @@ const Game = () => {
       {/* <audio controls src={one} type="audio/mpeg"></audio> */}
       {/* <button onClick={toggle}>{playing ? "Pause" : "Play"}</button> */}
       <div className="gamePageButtons">
-        <button
-          disabled={!gameOwner || gameStarted}
-          className="btn btn-primary"
-          onClick={startGame}
-        >
-          Start game
-        </button>
-        <button
-          disabled={!gameOwner || !gameStarted}
-          className="btn btn-primary"
-          onClick={pauseGame}
-        >
-          Pause game
-        </button>
+        {gameStarted ? (
+          <button
+            disabled={!gameOwner || !gameStarted}
+            className="btn btn-primary"
+            onClick={pauseGame}
+          >
+            Pause game
+          </button>
+        ) : (
+          <button
+            disabled={!gameOwner || gameStarted}
+            className="btn btn-primary"
+            onClick={startGame}
+          >
+            Start game
+          </button>
+        )}
         <button className="btn btn-success" onClick={toggleSilent}>
           {silent ? <span>Unmute</span> : <span>Mute</span>}
         </button>
