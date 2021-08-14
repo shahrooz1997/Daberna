@@ -10,6 +10,8 @@ if (envFound.error) {
 module.exports = {
   port: parseInt(process.env.DEFAULT_SERVER_PORT, 10),
 
+  cookieSecret: process.env.EXPRESS_COOKIE_SECRET,
+
   api: {
     prefix: "/api",
   },

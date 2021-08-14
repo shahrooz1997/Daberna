@@ -1,14 +1,15 @@
 const express = require("express");
 const fs = require("fs");
 const loaders = require("./loaders");
+const config = require("./config");
 
 const app = express();
 
-async function startServer() {
+function startServer() {
   const app = express();
-  await loaders.init({ expressApp: app });
+  loaders({ app });
 
-  app.listen(process.env.PORT, (err) => {
+  app.listen(config.port, (err) => {
     if (err) {
       console.log(err);
       return;

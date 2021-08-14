@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 
+// Todo
 const pool = new Pool();
 
 module.exports = {

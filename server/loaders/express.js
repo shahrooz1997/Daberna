@@ -46,9 +46,9 @@ module.exports = ({ app }) => {
   app.use(express.json());
 
   app.use(
-    sessionParsersession({
+    session({
       store: new (require("connect-pg-simple")(session))(),
-      secret: process.env.EXPRESS_COOKIE_SECRET,
+      secret: config.cookieSecret,
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -62,12 +62,8 @@ module.exports = ({ app }) => {
   );
 
   app.use(config.api.prefix, routes());
-  //   app.use(
-  //     OpticMiddleware({
-  //       enabled: process.env.NODE_ENV !== "production",
-  //     })
-  //   );
 
+  // Todo
   //   // catch 404 and forward to error handler
   //   app.use((req, res, next) => {
   //     const err = new Error("Not Found");
