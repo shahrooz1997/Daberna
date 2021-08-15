@@ -1,12 +1,55 @@
 const Router = require("express").Router;
+const userService = require("../services/user");
 
 const router = Router();
 
 router.post("/signup", (req, res) => {});
 
-router.post("/login", (req, res) => {});
+router.post("/login", async (req, res) => {
+  try {
+    const userRecord = await userService.isAuth(
+      req.session,
+      req.body.username,
+      req.body.password
+    );
+    if (userRecord.login) {
+      res.status(200).json({
+        username: userRecord.username,
+        balance: userRecord.userBalance,
+        msg: "Login successful",
+      });
+    } else {
+      res.status(401).json({
+        msg: "Wrong username or password",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
 
-router.get("login", (req, res) => {});
+router.get("/login", async (req, res) => {
+  try {
+    const userRecord = await userService.isAuth(req.session);
+    if (userRecord.login) {
+      res.status(200).json({
+        username: userRecord.username,
+        balance: userRecord.userBalance,
+        msg: "Logged in",
+      });
+    } else {
+      res.status(401).json({
+        msg: "Not logged in",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
 
 module.exports = (app) => {
   app.use("/user", route);

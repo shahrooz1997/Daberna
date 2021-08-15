@@ -103,6 +103,8 @@ app.get("/", (req, res) => {
 
 // Session operations
 app.get("/api/v1/login", async (req, res) => {
+  console.log("AAAAAA");
+  console.log(typeof req.session);
   if (req.session.userid) {
     res.status(200).json({
       username: req.session.username,

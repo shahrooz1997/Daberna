@@ -13,6 +13,6 @@ module.exports = {
   cookieSecret: process.env.EXPRESS_COOKIE_SECRET,
 
   api: {
-    prefix: "/api",
+    prefix: "/api/v1",
   },
 };
