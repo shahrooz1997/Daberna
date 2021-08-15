@@ -1,6 +1,6 @@
 const Router = require("express").Router;
-const userService = require("../services/user");
 const authenticate = require("./middleware/authenticate");
+const userService = require("../services/user");
 
 const router = Router();
 

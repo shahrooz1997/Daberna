@@ -1,18 +1,4 @@
 const db = require("../db");
-// class User {
-//   constructor() {}
-//   isAuth(sessionOrUsername, password) {
-//     if (typeof sessionOrUsername === "object") {
-//       const session = sessionOrUsername;
-//       if (session.username) {
-//         return true;
-//       } else {
-//         return false;
-//       }
-//     } else {
-//     }
-//   }
-// }
 
 async function signup({
   firstname,
