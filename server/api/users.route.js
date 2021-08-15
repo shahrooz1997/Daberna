@@ -1,10 +1,13 @@
-const express = require("express");
-const router = express.Router();
+const Router = require("express").Router;
 
-router.post("/signup", () => {});
+const router = Router();
 
-router.post("/login", () => {});
+router.post("/signup", (req, res) => {});
 
-router.get("login", () => {});
+router.post("/login", (req, res) => {});
 
-module.exports = router;
+router.get("login", (req, res) => {});
+
+module.exports = (app) => {
+  app.use("/user", route);
+};
