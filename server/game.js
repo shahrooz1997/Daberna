@@ -31,6 +31,8 @@ class Game {
   }
 
   checkWin(cardNums) {
+    console.log("BBBBBB");
+    console.log(cardNums);
     for (let i = this.drawnIndex; i < this.nums.length; i++) {
       if (cardNums.indexOf(this.nums[i]) != -1) {
         return false;

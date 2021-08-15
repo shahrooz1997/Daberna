@@ -276,7 +276,9 @@ app.post("/api/v1/game/win", async (req, res) => {
     console.log(req.session);
     if (req.session.username) {
       req.session.game = findGameById(req.session.gameid);
-      console.log(req.session.game);
+      // console.log(req.session.game);
+      console.log("cccccc");
+      console.log(req.session.cardid);
       if (req.session.game.checkWin(req.session.cardid)) {
         res.status(200).json({
           win: true,

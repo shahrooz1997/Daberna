@@ -1,3 +1,4 @@
+// Deprecated
 const Router = require("express").Router;
 const authenticate = require("./middleware/authenticate");
 const cardService = require("../services/cards");

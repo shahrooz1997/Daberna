@@ -1,3 +1,4 @@
+// Deprecated
 const db = require("../db");
 
 async function getAllCards() {

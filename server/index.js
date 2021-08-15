@@ -5,6 +5,8 @@ const runServer = require("./app");
 
 const numCPUs = os.cpus().length;
 
+// Todo: The request from the same user must go to the same child.
+
 if (cluster.isPrimary) {
   console.log(`Primary ${process.pid} is running`);
 
