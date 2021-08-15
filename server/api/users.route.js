@@ -1,9 +1,29 @@
 const Router = require("express").Router;
 const userService = require("../services/user");
+const authenticate = require("./middleware/authenticate");
 
 const router = Router();
 
-router.post("/signup", (req, res) => {});
+router.post("/signup", (req, res) => {
+  try {
+    const userRecord = await userService.signup({ ...req.body });
+    if (userRecord.signup) {
+      res.status(200).json({
+        username: userRecord.username,
+        balance: userRecord.userBalance,
+        msg: "Signup successful",
+      });
+    } else {
+      res.status(409).json({
+        msg: "The email or username exist",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
 
 router.post("/login", async (req, res) => {
   try {
@@ -44,6 +64,16 @@ router.get("/login", async (req, res) => {
         msg: "Not logged in",
       });
     }
+  } catch (err) {
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
+
+router.post("/logout", authenticate, async (req, res) => {
+  try {
+    userService.logout(req.session);
   } catch (err) {
     res.status(500).json({
       msg: "There has been an error on the server",
