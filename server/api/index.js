@@ -1,8 +1,8 @@
 const Router = require("express").Router;
-const user = require("./users.route");
+const user = require("./user.route");
 const cards = require("./cards.route");
 
-export default () => {
+module.exports = () => {
   const app = Router();
   user(app);
   cards(app);

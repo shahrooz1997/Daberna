@@ -8,7 +8,7 @@ if (envFound.error) {
 }
 
 module.exports = {
-  port: parseInt(process.env.DEFAULT_SERVER_PORT, 10),
+  port: parseInt(process.env.SERVER_PORT, 10) || 3600,
 
   cookieSecret: process.env.EXPRESS_COOKIE_SECRET,
 

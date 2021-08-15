@@ -13,15 +13,7 @@ async function signup({
     const max_id = Number(result_max_id.rows[0]["max_id"]);
     const result = await db.query(
       "INSERT INTO users (id, firstname, lastname, username, email, phone, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING username, balance",
-      [
-        max_id + 1,
-        req.body.firstname,
-        req.body.lastname,
-        req.body.username,
-        req.body.email,
-        req.body.phone,
-        req.body.password,
-      ]
+      [max_id + 1, firstname, lastname, username, email, phone, password]
     );
     if (result.rows.length != 1) {
       return {
@@ -31,7 +23,7 @@ async function signup({
     return {
       signup: true,
       username: result.rows[0].username,
-      balance: result.rows[0].balance,
+      balance: parseInt(result.rows[0].balance, 10),
     };
   } catch (err) {
     console.log(err);
@@ -55,7 +47,7 @@ async function isAuth(session, username, password) {
       try {
         const result = await db.query(
           "SELECT * FROM users where username=$1 and password=$2",
-          [req.body.username, req.body.password]
+          [username, password]
         );
         if (result.rows.length != 1) {
           return {
@@ -63,7 +55,7 @@ async function isAuth(session, username, password) {
           };
         } else {
           session.username = result.rows[0].username;
-          session.userBalance = result.rows[0].balance;
+          session.userBalance = parseInt(result.rows[0].balance, 10);
           return {
             login: true,
             username: session.username,

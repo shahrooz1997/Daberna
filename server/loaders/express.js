@@ -14,7 +14,7 @@ module.exports = ({ app }) => {
   });
   app.enable("trust proxy");
 
-  app.use(morgan("tiny"));
+  app.use(morgan("dev"));
   app.use((req, res, next) => {
     console.log(req.socket.remoteAddress);
     next();

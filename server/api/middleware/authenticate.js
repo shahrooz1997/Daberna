@@ -1,6 +1,6 @@
-const userService = require("../services/user");
+const userService = require("../../services/user");
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   try {
     const userRecord = await userService.isAuth(req.session);
     if (userRecord.login) {

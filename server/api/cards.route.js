@@ -4,9 +4,9 @@ const cardService = require("../services/cards");
 
 const router = Router();
 
-router.get("/", authenticate, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const result = cardService.getAllCards();
+    const result = await cardService.getAllCards();
     if (result.length > 0) {
       res.status(200).json({
         result,
@@ -27,5 +27,5 @@ router.get("/", authenticate, async (req, res) => {
 router.get("/:id", authenticate, async (req, res) => {});
 
 module.exports = (app) => {
-  app.use("/cards", router);
+  app.use("/cards", authenticate, router);
 };

@@ -4,13 +4,13 @@ const userService = require("../services/user");
 
 const router = Router();
 
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const userRecord = await userService.signup({ ...req.body });
     if (userRecord.signup) {
       res.status(200).json({
         username: userRecord.username,
-        balance: userRecord.userBalance,
+        balance: userRecord.balance,
         msg: "Signup successful",
       });
     } else {
@@ -32,10 +32,11 @@ router.post("/login", async (req, res) => {
       req.body.username,
       req.body.password
     );
+    console.log(userRecord);
     if (userRecord.login) {
       res.status(200).json({
         username: userRecord.username,
-        balance: userRecord.userBalance,
+        balance: userRecord.balance,
         msg: "Login successful",
       });
     } else {
@@ -56,7 +57,7 @@ router.get("/login", async (req, res) => {
     if (userRecord.login) {
       res.status(200).json({
         username: userRecord.username,
-        balance: userRecord.userBalance,
+        balance: userRecord.balance,
         msg: "Logged in",
       });
     } else {
@@ -74,6 +75,9 @@ router.get("/login", async (req, res) => {
 router.post("/logout", authenticate, async (req, res) => {
   try {
     userService.logout(req.session);
+    res.status(500).json({
+      msg: "Logged out",
+    });
   } catch (err) {
     res.status(500).json({
       msg: "There has been an error on the server",
@@ -82,5 +86,5 @@ router.post("/logout", authenticate, async (req, res) => {
 });
 
 module.exports = (app) => {
-  app.use("/user", route);
+  app.use("/user", router);
 };
