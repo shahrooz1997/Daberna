@@ -75,7 +75,7 @@ router.get("/login", async (req, res) => {
 router.post("/logout", authenticate, async (req, res) => {
   try {
     userService.logout(req.session);
-    res.status(500).json({
+    res.status(200).json({
       msg: "Logged out",
     });
   } catch (err) {

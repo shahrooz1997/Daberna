@@ -19,8 +19,8 @@ const Home = () => {
       const res = await gameApi.createGame();
       // const res = { data: { gameid: "AAAAA" } };
       // setGameid(res.data.gameid);
-      console.log(res.data.gameid);
-      dispatch(actions.createGame(res.data.gameid));
+      console.log(res.data.gameId);
+      dispatch(actions.createGame(res.data.gameId));
       history.push("/selectcard");
     } catch (e) {
       console.log(e);
@@ -30,9 +30,7 @@ const Home = () => {
   const joinGame = async () => {
     try {
       console.log("clicked");
-      const res = await gameApi.joinGame({
-        gameid,
-      });
+      const res = await gameApi.joinGame(gameid);
       console.log("joined " + gameid);
       dispatch(actions.joinGame(gameid));
       history.push("/selectcard");

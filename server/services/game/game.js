@@ -1,6 +1,6 @@
 const shuffle = require("../utils/shuffle");
 const uid = require("../utils/uid");
-const db = require("../db");
+const db = require("../../db");
 
 class Game {
   constructor() {
@@ -8,14 +8,17 @@ class Game {
     this.nums = shuffle(1, 90);
     this.drawnIndex = 0;
     this.users = []; // An array of user ids participating in this game
-    this.state = "pause"; // pause, play
+    this.state = "created"; // created, pause, play
     this.cards = [];
     this.availableCards = [];
+  }
 
+  async fillCards() {
     const result = await db.query("SELECT id FROM cards");
     for (const row of result.rows) {
-      this.cards.push(row.id);
-      this.availableCards.push(row.id);
+      const id = parseInt(row.id, 10);
+      this.cards.push(id);
+      this.availableCards.push(id);
     }
   }
 
@@ -31,11 +34,12 @@ class Game {
 
   async getAvailableCards() {
     const result = await db.query(
-      "SELECT id, numbers FROM cards where id = ($1)",
-      [this.availableCards]
+      `SELECT id, numbers FROM cards where id in (${this.availableCards.join(
+        ","
+      )})`
     );
     if (result.rows.length === 0) {
-      throw new Error(`Card with id ${cardId} does not exist`);
+      throw new Error("No card was found");
     }
     return result.rows;
   }

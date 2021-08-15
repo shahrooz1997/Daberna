@@ -16,10 +16,9 @@ export const createGame = async () => {
   return res;
 };
 
-export const joinGame = async (body) => {
-  const res = await axios.post(
-    `http://${serverAddress}/api/v1/game/join`,
-    body,
+export const joinGame = async (gameId) => {
+  const res = await axios.get(
+    `http://${serverAddress}/api/v1/game/join/${gameId}`,
     {
       ...commonAttrs,
     }
@@ -68,5 +67,12 @@ export const cardSelected = async (body) => {
       ...commonAttrs,
     }
   );
+  return res;
+};
+
+export const getAllCards = async () => {
+  const res = await axios.get(`http://${serverAddress}/api/v1/game/cards`, {
+    ...commonAttrs,
+  });
   return res;
 };

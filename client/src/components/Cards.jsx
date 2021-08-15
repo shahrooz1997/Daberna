@@ -5,6 +5,7 @@ import "../styles/card.css";
 import { useDispatch } from "react-redux";
 import * as actions from "../store/actions";
 import { Link } from "react-router-dom";
+import { getAllCards } from "../apis/game";
 
 const Cards = () => {
   const [cards, set_cards] = useState([]);
@@ -14,9 +15,10 @@ const Cards = () => {
     const fetchCards = async () => {
       // dispatch(actions.init());
       try {
-        const res = await CardsFinder.get("/");
-        set_cards(res.data);
-        dispatch(actions.getCards(res.data));
+        // const res = await CardsFinder.get("/");
+        const res = await getAllCards();
+        set_cards(res.data.cards);
+        dispatch(actions.getCards(res.data.cards));
       } catch (err) {
         console.log(err);
       }
