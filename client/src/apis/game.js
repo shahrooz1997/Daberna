@@ -49,19 +49,15 @@ export const pauseGame = async () => {
 };
 
 export const winGame = async () => {
-  const res = await axios.post(
-    `http://${serverAddress}/api/v1/game/win`,
-    {},
-    {
-      ...commonAttrs,
-    }
-  );
+  const res = await axios.get(`http://${serverAddress}/api/v1/game/win`, {
+    ...commonAttrs,
+  });
   return res;
 };
 
 export const cardSelected = async (body) => {
   const res = await axios.post(
-    `http://${serverAddress}/api/v1/game/cardselected`,
+    `http://${serverAddress}/api/v1/game/card`,
     body,
     {
       ...commonAttrs,

@@ -84,7 +84,7 @@ const Game = () => {
     const cardSelected = async () => {
       try {
         const res = await gameApi.cardSelected({
-          cardid: id,
+          cardId: id,
         });
       } catch (e) {
         console.log(e);
@@ -92,7 +92,7 @@ const Game = () => {
     };
     cardSelected();
     const ws = new WebSocket(
-      `ws://${process.env.REACT_APP_SERVER_ADDRESS}/number`
+      `ws://${process.env.REACT_APP_SERVER_ADDRESS}/api/v1/ws/number`
     );
     ws.onopen = () => {
       console.log("Connected to numbers WS");
