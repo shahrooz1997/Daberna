@@ -54,9 +54,56 @@ router.get("/join/:id", async (req, res) => {
 router.get("/cards", gameParticipant, async (req, res) => {
   try {
     const result = await gameService.getAvailableCards(req.session);
-    res.status(200).json({
-      cards: result.cards,
+
+    if (result.cards.length !== 0) {
+      res.status(200).json({
+        cards: result.cards,
+      });
+    } else {
+      res.status(403).json({
+        msg: "No card is available",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
     });
+  }
+});
+
+router.get("/start", gameParticipant, async (req, res) => {
+  try {
+    const result = await gameService.startGame(req.session);
+    if (result.start) {
+      res.status(200).json({
+        msg: "Game started",
+      });
+    } else {
+      res.status(200).json({
+        msg: "Only owner can start the game",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
+
+router.get("/pause", gameParticipant, async (req, res) => {
+  try {
+    const result = await gameService.pauseGame(req.session);
+    if (result.pause) {
+      res.status(200).json({
+        msg: "Game paused",
+      });
+    } else {
+      res.status(200).json({
+        msg: "Only owner can pause the game",
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -67,6 +114,11 @@ router.get("/cards", gameParticipant, async (req, res) => {
 
 router.get("/win", gameParticipant, async (req, res) => {
   try {
+    const result = await gameService.hasWon(req.session);
+
+    res.status(200).json({
+      cards: result.cards,
+    });
   } catch (err) {
     res.status(500).json({
       msg: "There has been an error on the server",

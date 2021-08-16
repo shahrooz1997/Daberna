@@ -15,10 +15,12 @@ module.exports = ({ app }) => {
   app.enable("trust proxy");
 
   app.use(morgan("dev"));
-  app.use((req, res, next) => {
-    console.log(req.socket.remoteAddress);
-    next();
-  });
+
+  // Print client ip address
+  // app.use((req, res, next) => {
+  //   console.log(req.socket.remoteAddress);
+  //   next();
+  // });
 
   //   app.use((req, res, next) => {
   //     res.header("Access-Control-Allow-Origin", "http://localhost:3000");

@@ -32,7 +32,6 @@ router.post("/login", async (req, res) => {
       req.body.username,
       req.body.password
     );
-    console.log(userRecord);
     if (userRecord.login) {
       res.status(200).json({
         username: userRecord.username,

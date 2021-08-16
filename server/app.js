@@ -1,4 +1,5 @@
 const express = require("express");
+const http = require("http");
 const fs = require("fs");
 const loaders = require("./loaders");
 const config = require("./config");
@@ -7,14 +8,15 @@ const app = express();
 
 function startServer() {
   const app = express();
-  loaders({ app });
+  const server = http.createServer(app);
+  loaders({ app, server });
 
-  app.listen(config.port, (err) => {
+  server.listen(config.port, (err) => {
     if (err) {
       console.log(err);
       return;
     }
-    console.log(`Your server is ready !`);
+    console.log(`Server is up and listening on port ${config.port}`);
   });
 }
 

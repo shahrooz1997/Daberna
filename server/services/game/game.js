@@ -8,9 +8,16 @@ class Game {
     this.nums = shuffle(1, 90);
     this.drawnIndex = 0;
     this.users = []; // An array of user ids participating in this game
+    this.usernameWs = {};
+    this.numberSubscribers = {};
     this.state = "created"; // created, pause, play
     this.cards = [];
     this.availableCards = [];
+    this.numberInterval = null;
+  }
+
+  addNumberSubscribers(username, ws) {
+    this.numberSubscribers[username] = ws;
   }
 
   async fillCards() {
@@ -33,13 +40,17 @@ class Game {
   }
 
   async getAvailableCards() {
+    if (this.availableCards.length === 0) {
+      console.log("There is no card available");
+      return [];
+    }
     const result = await db.query(
       `SELECT id, numbers FROM cards where id in (${this.availableCards.join(
         ","
       )})`
     );
     if (result.rows.length === 0) {
-      throw new Error("No card was found");
+      console.log("No available card was found");
     }
     return result.rows;
   }
@@ -48,6 +59,9 @@ class Game {
     const userindex = this.users.indexOf(username);
     if (userindex === -1) {
       this.users.push(username);
+      for (const user in this.usernameWs) {
+        this.usernameWs[user].send(username);
+      }
     }
   }
 
@@ -66,7 +80,7 @@ class Game {
   }
 
   checkWin(cardId) {
-    const cardNums = this.getCardNums(cardId);
+    const cardNums = this.getCardNums(cardId).map((arr) => arr[1]);
     // Todo: Check the structure of cardNums
     for (let i = this.drawnIndex; i < this.nums.length; i++) {
       if (cardNums.indexOf(this.nums[i]) != -1) {
@@ -81,15 +95,30 @@ class Game {
   }
 
   start() {
-    // Todo: Start interval
+    const num = this.draw();
+    if (num == -1) {
+      clearInterval(this.numberInterval);
+    }
+    for (const user in this.numberSubscribers) {
+      this.numberSubscribers[user].send(num);
+    }
+    this.numberInterval = setInterval(() => {
+      const num = this.draw();
+      if (num == -1) {
+        clearInterval(this.numberInterval);
+      }
+      for (const user in this.numberSubscribers) {
+        this.numberSubscribers[user].send(num);
+      }
+    }, 2500);
   }
 
   pause() {
-    // Todo: Clear interval
+    clearInterval(this.numberInterval);
   }
 
   destroy() {
-    // Todo: Clear interval
+    clearInterval(this.numberInterval);
   }
 }
 

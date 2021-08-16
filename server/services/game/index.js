@@ -85,6 +85,49 @@ function joinGame(session, gameId) {
   };
 }
 
+function getUsernames(session, ws) {
+  const game = games[session.gameId];
+
+  game.usernameWs[session.username] = ws;
+
+  return {
+    users: game.users,
+  };
+}
+
+function subscribeNumbers(session, ws) {
+  const game = games[session.gameId];
+  game.addNumberSubscribers(session.username, ws);
+}
+
+function startGame(session) {
+  if (!session.gameOwner) {
+    return {
+      start: false,
+    };
+  }
+
+  const game = games[session.gameId];
+  game.start();
+  return {
+    start: true,
+  };
+}
+
+function pauseGame(session) {
+  if (!session.gameOwner) {
+    return {
+      pause: false,
+    };
+  }
+
+  const game = games[session.gameId];
+  game.pause();
+  return {
+    pause: true,
+  };
+}
+
 module.exports = {
   createGame,
   joinGame,
@@ -92,4 +135,8 @@ module.exports = {
   hasWon,
   getAvailableCards,
   hasGame,
+  getUsernames,
+  subscribeNumbers,
+  startGame,
+  pauseGame,
 };

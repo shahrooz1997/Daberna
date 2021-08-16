@@ -1,5 +1,7 @@
 const expressLoader = require("./express");
+const wsLoader = require("./ws");
 
-module.exports = (app) => {
-  expressLoader(app);
+module.exports = (toLoadModules) => {
+  wsLoader(toLoadModules);
+  expressLoader(toLoadModules);
 };
