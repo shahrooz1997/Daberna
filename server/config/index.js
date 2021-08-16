@@ -8,6 +8,11 @@ if (envFound.error) {
 }
 
 module.exports = {
+  certificatePath: {
+    key: "privkey.key",
+    cert: "cert.crt",
+  },
+
   port: parseInt(process.env.SERVER_PORT, 10) || 3600,
 
   cookieSecret: process.env.EXPRESS_COOKIE_SECRET,

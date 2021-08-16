@@ -46,9 +46,10 @@ async function createGame(session) {
   };
 }
 
-function hasWon(session) {
+async function hasWon(session) {
+  const game = games[session.gameId];
   return {
-    win: games[session.gameId].checkWin(),
+    win: await game.checkWin(session.cardId),
   };
 }
 
@@ -128,6 +129,20 @@ function pauseGame(session) {
   };
 }
 
+function selectCard(session, cardId) {
+  const game = games[session.gameId];
+  game.userSelectedCard[session.username] = cardId;
+  session.cardId = cardId;
+  return {
+    selected: true,
+  };
+}
+
+function allUserSelectedCard(session) {
+  const game = games[session.gameId];
+  return game.allUserSelectedCard();
+}
+
 module.exports = {
   createGame,
   joinGame,
@@ -139,4 +154,6 @@ module.exports = {
   subscribeNumbers,
   startGame,
   pauseGame,
+  selectCard,
+  allUserSelectedCard,
 };

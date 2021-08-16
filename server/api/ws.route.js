@@ -7,8 +7,8 @@ module.exports = (app) => {
   const router = Router();
 
   router.ws("/usernames", (ws, req) => {
-    // console.log(req.session);
-    const result = gameService.getUsernames(req.session);
+    console.log(`usernames WebSocket opened for user ${req.session.username}`);
+    const result = gameService.getUsernames(req.session, ws);
     if (result.users.length !== 0) {
       ws.send(result.users.join());
     }

@@ -42,6 +42,7 @@ router.get("/join/:id", async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       msg: "There has been an error on the server",
     });
@@ -72,7 +73,28 @@ router.get("/cards", gameParticipant, async (req, res) => {
   }
 });
 
-router.get("/start", gameParticipant, async (req, res) => {
+router.post("/card", gameParticipant, async (req, res) => {
+  try {
+    const result = gameService.selectCard(req.session, req.body.cardId);
+
+    if (result.selected) {
+      res.status(200).json({
+        msg: `card ${req.body.cardId} selected`,
+      });
+    } else {
+      res.status(403).json({
+        msg: `couldn't select card ${req.body.cardId}`,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
+
+router.post("/start", gameParticipant, async (req, res) => {
   try {
     const result = await gameService.startGame(req.session);
     if (result.start) {
@@ -92,7 +114,7 @@ router.get("/start", gameParticipant, async (req, res) => {
   }
 });
 
-router.get("/pause", gameParticipant, async (req, res) => {
+router.post("/pause", gameParticipant, async (req, res) => {
   try {
     const result = await gameService.pauseGame(req.session);
     if (result.pause) {
@@ -115,11 +137,11 @@ router.get("/pause", gameParticipant, async (req, res) => {
 router.get("/win", gameParticipant, async (req, res) => {
   try {
     const result = await gameService.hasWon(req.session);
-
     res.status(200).json({
-      cards: result.cards,
+      win: result.win,
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       msg: "There has been an error on the server",
     });

@@ -14,6 +14,16 @@ class Game {
     this.cards = [];
     this.availableCards = [];
     this.numberInterval = null;
+    this.userSelectedCard = {};
+  }
+
+  allUserSelectedCard() {
+    for (const user of users) {
+      if (!user in userSelectedCard) {
+        return false;
+      }
+    }
+    return true;
   }
 
   addNumberSubscribers(username, ws) {
@@ -60,7 +70,7 @@ class Game {
     if (userindex === -1) {
       this.users.push(username);
       for (const user in this.usernameWs) {
-        this.usernameWs[user].send(username);
+        this.usernameWs[user].send(this.users.join());
       }
     }
   }
@@ -79,11 +89,11 @@ class Game {
     return this.nums[this.drawnIndex++];
   }
 
-  checkWin(cardId) {
-    const cardNums = this.getCardNums(cardId).map((arr) => arr[1]);
-    // Todo: Check the structure of cardNums
+  async checkWin(cardId) {
+    const cardNumsArr = await this.getCardNums(cardId);
+    const cardNums = cardNumsArr.map((arr) => arr[1]);
     for (let i = this.drawnIndex; i < this.nums.length; i++) {
-      if (cardNums.indexOf(this.nums[i]) != -1) {
+      if (cardNums.indexOf(this.nums[i]) !== -1) {
         return false;
       }
     }
@@ -95,12 +105,17 @@ class Game {
   }
 
   start() {
+    this.state = "paly";
     const num = this.draw();
     if (num == -1) {
       clearInterval(this.numberInterval);
     }
-    for (const user in this.numberSubscribers) {
-      this.numberSubscribers[user].send(num);
+    console.log(this.drawnIndex);
+    if (this.drawnIndex === 1) {
+      // The first draw
+      for (const user in this.numberSubscribers) {
+        this.numberSubscribers[user].send(num);
+      }
     }
     this.numberInterval = setInterval(() => {
       const num = this.draw();
@@ -110,11 +125,12 @@ class Game {
       for (const user in this.numberSubscribers) {
         this.numberSubscribers[user].send(num);
       }
-    }, 2500);
+    }, 500);
   }
 
   pause() {
     clearInterval(this.numberInterval);
+    this.state = "pause";
   }
 
   destroy() {
