@@ -75,7 +75,10 @@ router.get("/cards", gameParticipant, async (req, res) => {
 
 router.post("/card", gameParticipant, async (req, res) => {
   try {
-    const result = gameService.selectCard(req.session, req.body.cardId);
+    const result = gameService.selectCard(
+      req.session,
+      parseInt(req.body.cardId)
+    );
 
     if (result.selected) {
       res.status(200).json({

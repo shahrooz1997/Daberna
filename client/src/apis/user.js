@@ -9,6 +9,17 @@ let commonAttrs = {
   withCredentials: true,
 };
 
+export const signup = async (body) => {
+  const res = await axios.post(
+    `http://${serverAddress}/api/v1/user/signup`,
+    body,
+    {
+      ...commonAttrs,
+    }
+  );
+  return res;
+};
+
 export const login = async (body) => {
   const res = await axios.post(
     `http://${serverAddress}/api/v1/user/login`,

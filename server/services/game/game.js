@@ -10,6 +10,7 @@ class Game {
     this.users = []; // An array of user ids participating in this game
     this.usernameWs = {};
     this.numberSubscribers = {};
+    this.availableCardsSubscribers = {};
     this.state = "created"; // created, pause, play
     this.cards = [];
     this.availableCards = [];
@@ -17,6 +18,21 @@ class Game {
     this.userSelectedCard = {};
   }
 
+  addUser(username) {
+    const userindex = this.users.indexOf(username);
+    if (userindex === -1) {
+      this.users.push(username);
+      for (const user in this.usernameWs) {
+        this.usernameWs[user].send(this.users.join());
+      }
+    }
+  }
+  removeUser(username) {
+    const userindex = this.users.indexOf(username);
+    if (userindex !== -1) {
+      this.users.splice(userindex, 1);
+    }
+  }
   allUserSelectedCard() {
     for (const user of users) {
       if (!user in userSelectedCard) {
@@ -24,10 +40,6 @@ class Game {
       }
     }
     return true;
-  }
-
-  addNumberSubscribers(username, ws) {
-    this.numberSubscribers[username] = ws;
   }
 
   async fillCards() {
@@ -38,7 +50,6 @@ class Game {
       this.availableCards.push(id);
     }
   }
-
   async getCardNums(cardId) {
     const result = await db.query("SELECT numbers FROM cards where id = $1", [
       cardId,
@@ -48,7 +59,6 @@ class Game {
     }
     return result.rows[0].numbers;
   }
-
   async getAvailableCards() {
     if (this.availableCards.length === 0) {
       console.log("There is no card available");
@@ -64,21 +74,14 @@ class Game {
     }
     return result.rows;
   }
-
-  addUser(username) {
-    const userindex = this.users.indexOf(username);
-    if (userindex === -1) {
-      this.users.push(username);
-      for (const user in this.usernameWs) {
-        this.usernameWs[user].send(this.users.join());
-      }
-    }
+  subscribeAvailableCards(username, ws) {
+    this.availableCardsSubscribers[username] = ws;
   }
-
-  removeUser(username) {
-    const userindex = this.users.indexOf(username);
-    if (userindex !== -1) {
-      this.users.splice(userindex, 1);
+  selectCard(username, cardId) {
+    this.userSelectedCard[username] = cardId;
+    this.availableCards = this.availableCards.filter((id) => id !== cardId);
+    for (const user in this.availableCardsSubscribers) {
+      this.availableCardsSubscribers[user].send(this.availableCards.join());
     }
   }
 
@@ -88,22 +91,9 @@ class Game {
     }
     return this.nums[this.drawnIndex++];
   }
-
-  async checkWin(cardId) {
-    const cardNumsArr = await this.getCardNums(cardId);
-    const cardNums = cardNumsArr.map((arr) => arr[1]);
-    for (let i = this.drawnIndex; i < this.nums.length; i++) {
-      if (cardNums.indexOf(this.nums[i]) !== -1) {
-        return false;
-      }
-    }
-    return true;
+  addNumberSubscribers(username, ws) {
+    this.numberSubscribers[username] = ws;
   }
-
-  selectCard(cardId) {
-    this.availableCards = this.availableCards.filter((id) => id !== cardId);
-  }
-
   start() {
     this.state = "paly";
     const num = this.draw();
@@ -125,16 +115,24 @@ class Game {
       for (const user in this.numberSubscribers) {
         this.numberSubscribers[user].send(num);
       }
-    }, 500);
+    }, 2500);
   }
-
   pause() {
     clearInterval(this.numberInterval);
     this.state = "pause";
   }
-
   destroy() {
     clearInterval(this.numberInterval);
+  }
+  async checkWin(cardId) {
+    const cardNumsArr = await this.getCardNums(cardId);
+    const cardNums = cardNumsArr.map((arr) => arr[1]);
+    for (let i = this.drawnIndex; i < this.nums.length; i++) {
+      if (cardNums.indexOf(this.nums[i]) !== -1) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

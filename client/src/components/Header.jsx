@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as userApi from "../apis/user";
 
-const Header = ({ homeLogIn }) => {
+const Header = ({ homeLogIn, empty }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setloggedIn] = useState(false);
@@ -60,8 +60,8 @@ const Header = ({ homeLogIn }) => {
     <div className="headerContainer bg-dark">
       <div>
         <h2 className="brand text-warning">Daberna</h2>
-        {isLoading && <div className="loading">Loading...</div>}
-        {!isLoading && !loggedIn && (
+        {!empty && isLoading && <div className="loading">Loading...</div>}
+        {!empty && !isLoading && !loggedIn && (
           <form>
             <input
               className="form-control me-2"
@@ -89,12 +89,12 @@ const Header = ({ homeLogIn }) => {
             >
               Login
             </button>
-            {/* <button className="btn btn-warning" type="submit">
-            Sign Up
-          </button> */}
+            <button className="btn btn-warning ms-2" type="submit">
+              Sign Up
+            </button>
           </form>
         )}
-        {!isLoading && loggedIn && (
+        {!empty && !isLoading && loggedIn && (
           <div className="userInfoContainer">
             <div className="userInfo">
               <div>Username: {username}</div>

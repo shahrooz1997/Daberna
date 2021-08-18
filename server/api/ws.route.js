@@ -30,6 +30,16 @@ module.exports = (app) => {
     });
   });
 
+  router.ws("/available_cards", (ws, req) => {
+    gameService.availableCards(req.session, ws);
+    ws.on("message", () => {});
+    ws.on("close", () => {
+      console.log(
+        `number WebSocket was closed for user ${req.session.username}`
+      );
+    });
+  });
+
   app.use("/ws", authenticate, gameParticipant, router);
   //   app.use("/ws", router);
 };

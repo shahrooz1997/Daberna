@@ -131,8 +131,8 @@ function pauseGame(session) {
 
 function selectCard(session, cardId) {
   const game = games[session.gameId];
-  game.userSelectedCard[session.username] = cardId;
   session.cardId = cardId;
+  game.selectCard(session.username, cardId);
   return {
     selected: true,
   };
@@ -141,6 +141,11 @@ function selectCard(session, cardId) {
 function allUserSelectedCard(session) {
   const game = games[session.gameId];
   return game.allUserSelectedCard();
+}
+
+function availableCards(session, ws) {
+  const game = games[session.gameId];
+  game.subscribeAvailableCards(session.username, ws);
 }
 
 module.exports = {
@@ -156,4 +161,5 @@ module.exports = {
   pauseGame,
   selectCard,
   allUserSelectedCard,
+  availableCards,
 };

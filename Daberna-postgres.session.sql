@@ -9,8 +9,8 @@ CREATE TABLE users(
     lastname VARCHAR(100),
     username VARCHAR(100) NOT NULL,
     email VARCHAR(100),
-    phone VARCHAR(100) NOT NULL,
-    password VARCHAR(100),
+    phone VARCHAR(100),
+    password VARCHAR(100) NOT NULL,
     score INT DEFAULT 0 NOT NULL,
     balance NUMERIC(20, 0) DEFAULT 0,
     UNIQUE(username),
@@ -18,7 +18,7 @@ CREATE TABLE users(
     UNIQUE(phone)
 );
 
-create function no_empty_string_in_email()
+create or replace function no_empty_string_in_email()
 returns TRIGGER
 language plpgsql
 as $$

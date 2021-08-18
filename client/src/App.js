@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Login from "./components/Login";
 import SelectCard from "./pages/SelectCard";
+import Signup from "./pages/Signup";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route exact path="/login" component={Login} />
           <Route exact path="/game/:id" component={Game} />
           <Route exact path="/selectcard" component={SelectCard} />
+          <Route exact path="/signup" component={Signup} />
         </Switch>
       </Router>
     </div>
