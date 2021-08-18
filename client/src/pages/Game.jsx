@@ -32,7 +32,7 @@ const Game = () => {
   const [gameStarted, setgameStarted] = useState(false);
   const [silent, setSilent] = useState(true);
   const [audioCtx, setAudioCtx] = useState(null);
-  const [audios, setAudios] = useState([]);
+  const [audio, setAudio] = useState(null);
   const [gainNode, setGainNode] = useState(null);
   console.log("A" + id);
   const { id: pId } = useParams();
@@ -40,77 +40,139 @@ const Game = () => {
     id = pId;
   }
 
+  // useEffect(() => {
+  //   if (first && !silent) {
+  //     const AudioContext = window.AudioContext || window.webkitAudioContext;
+  //     const audioContext = new AudioContext();
+  //     setAudioCtx(audioContext);
+  //     if (audioContext.state === "suspended") {
+  //       audioContext.resume();
+  //     }
+  //     const gainNode = audioContext.createGain();
+  //     const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/1.wav`;
+  //     const audio = new Audio(audioPath);
+  //     const source = audioContext.createMediaElementSource(audio);
+  //     source.connect(gainNode);
+
+  //     gainNode.connect(audioContext.destination);
+  //     gainNode.gain.value = 0.0;
+  //     audio.play().then(() => {
+  //       audio.pause();
+  //     });
+  //     setFirst(false);
+  //   }
+  // }, [first, silent, setAudioCtx, setFirst]);
+
+  useEffect(() => {
+    if (!silent && audio === null) {
+      const a = new Audio();
+      setAudio(a);
+      a.play().catch((e) => {
+        console.log("Couln't play the audio");
+      });
+
+      // const AudioContext = window.AudioContext || window.webkitAudioContext;
+      // const audioContext = new AudioContext();
+      // setAudioCtx(audioContext);
+      // if (audioContext.state === "suspended") {
+      //   audioContext.resume();
+      // }
+      // const gainNode = audioContext.createGain();
+      // const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/1.wav`;
+      // const audio = new Audio(audioPath);
+      // const source = audioContext.createMediaElementSource(audio);
+      // source.connect(gainNode);
+
+      // gainNode.connect(audioContext.destination);
+      // gainNode.gain.value = 0.0;
+      // audio.play().then(() => {
+      //   audio.pause();
+      // });
+    }
+  }, [silent, setAudio]);
+
+  // useEffect(() => {
+  //   async function f() {
+  //     if (!silent) {
+  //       const AudioContext = window.AudioContext || window.webkitAudioContext;
+  //       const audioContext = new AudioContext();
+  //       setAudioCtx(audioContext);
+  //       if (audioContext.state === "suspended") {
+  //         audioContext.resume();
+  //       }
+  //       const gainNode = audioContext.createGain();
+  //       gainNode.connect(audioContext.destination);
+  //       gainNode.gain.value = 0.0;
+  //       setGainNode(gainNode);
+
+  //       const ret = [];
+  //       for (let i = 0; i <= 90; i++) {
+  //         const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${i}.wav`;
+  //         const audio = new Audio(audioPath);
+  //         const source = audioContext.createMediaElementSource(audio);
+  //         source.connect(gainNode);
+  //         try {
+  //           await audio.play();
+  //           await audio.pause();
+  //         } catch (e) {
+  //           console.log(e);
+  //         }
+
+  //         ret.push(audio);
+  //       }
+  //       setAudios(ret);
+  //     }
+  //   }
+  //   f();
+  // }, [silent, setAudioCtx, setAudios]);
+
   useEffect(() => {
     async function f() {
-      if (!silent) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioContext = new AudioContext();
-        setAudioCtx(audioContext);
-        if (audioContext.state === "suspended") {
-          audioContext.resume();
-        }
-        const gainNode = audioContext.createGain();
-        gainNode.connect(audioContext.destination);
-        gainNode.gain.value = 0.0;
-        setGainNode(gainNode);
+      if (silent && audio) {
+        audio.pause();
+      }
+      if (!silent && luckyNum >= 0 && audio) {
+        const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
+        audio.src = audioPath;
+        audio.play();
+      }
+    }
+    f();
+  }, [audio, luckyNum, silent]);
 
-        const ret = [];
-        for (let i = 0; i <= 90; i++) {
-          const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/${i}.wav`;
-          const audio = new Audio(audioPath);
-          const source = audioContext.createMediaElementSource(audio);
-          source.connect(gainNode);
-          try {
-            await audio.play();
-          } catch (e) {
-            console.log(e);
-          }
-
-          ret.push(audio);
-        }
-        document.querySelector("button").addEventListener("click", function () {
-          audioContext.resume().then(() => {
-            console.log("Playback resumed successfully");
-          });
+  function activeAudio(e) {
+    if (!silent) {
+      const a = new Audio(`${process.env.PUBLIC_URL}/audio-numbers/2.wav`);
+      setAudio(a);
+      a.play()
+        .then(() => {
+          // a.pause();
+        })
+        .catch((e) => {
+          console.log("Couldn't play the audio");
         });
-        setAudios(ret);
-      }
+      document.body.removeEventListener("touchstart", activeAudio, false);
     }
-    f();
-  }, [silent, setAudioCtx, setAudios]);
+  }
 
-  useEffect(() => {
-    async function f() {
-      if (
-        !silent &&
-        gainNode &&
-        audios &&
-        audios.length === 91 &&
-        luckyNum >= 0
-      ) {
-        gainNode.gain.value = 0.8;
+  document.body.addEventListener("touchstart", activeAudio, false);
 
-        try {
-          await audios[luckyNum].play();
-        } catch (e) {
-          console.log(e);
-        }
-        // const url = `${process.env.PUBLIC_URL}/audio-numbers/${luckyNum}.wav`;
-        // const audioObj = new Audio(url);
-        // const source = audioCtx.createMediaElementSource(audioObj);
-        // var gainNode = audioCtx.createGain();
-        // gainNode.gain.value = 0.2;
-        // source.connect(gainNode);
-        // gainNode.connect(audioCtx.destination);
-        // // source.connect(audioCtx.destination);
-        // console.log("SSSS ", audioCtx.state);
-        // audioObj.play();
-        // // for (let i = 0; i < 100000000; i++) {}
-        // // source.disconnect(audioCtx.destination);
-      }
-    }
-    f();
-  }, [audios, gainNode, luckyNum, silent]);
+  // useEffect(() => {
+  //   async function f() {
+  //     if (!silent && luckyNum >= 0 && audioCtx) {
+  //       const gainNode = audioCtx.createGain();
+  //       const audioPath = `${process.env.PUBLIC_URL}/audio-numbers/1.wav`;
+  //       const audio = new Audio(audioPath);
+  //       const source = audioCtx.createMediaElementSource(audio);
+  //       source.connect(gainNode);
+
+  //       gainNode.connect(audioCtx.destination);
+  //       gainNode.gain.value = 1.0;
+  //       audio.play();
+  //     }
+  //   }
+  //   f();
+  // }, [audioCtx, luckyNum, silent]);
 
   // useEffect(() => {
   //   audio.addEventListener("ended", () => setPlaying(false));
