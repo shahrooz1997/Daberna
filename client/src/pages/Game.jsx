@@ -217,7 +217,7 @@ const Game = () => {
         <h2 className="luckynum">
           {luckyNums.map((num, index, array) => {
             return (
-              <span>
+              <span key={num}>
                 {num}
                 {index !== array.length - 1 ? "," : ""}{" "}
               </span>

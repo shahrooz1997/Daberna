@@ -29,8 +29,13 @@ const Info = (props) => {
 
       <div>
         <h3>Users:</h3>
-        {users.map((user) => {
-          return <span key={user}>{user}, </span>;
+        {users.map((user, index, array) => {
+          return (
+            <span key={user}>
+              {user}
+              {index !== array.length - 1 ? "," : ""}{" "}
+            </span>
+          );
         })}
       </div>
     </div>
