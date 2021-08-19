@@ -29,8 +29,6 @@ const Card4 = (props) => {
   const nums = convert_num_array(props.nums);
   const coveredIndecies = useSelector((state) => state.card.coveredNumbers);
 
-  console.log(nums);
-
   let cols = [];
 
   for (let i = 0; i < nums.length / 3; i++) {
