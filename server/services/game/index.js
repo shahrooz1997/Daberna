@@ -148,6 +148,13 @@ function availableCards(session, ws) {
   game.subscribeAvailableCards(session.username, ws);
 }
 
+async function getAllCards(session) {
+  const game = games[session.gameId];
+  return {
+    cards: await game.getAllCards(),
+  };
+}
+
 module.exports = {
   createGame,
   joinGame,
@@ -162,4 +169,5 @@ module.exports = {
   selectCard,
   allUserSelectedCard,
   availableCards,
+  getAllCards,
 };

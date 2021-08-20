@@ -9,6 +9,11 @@ async function signup({
   password,
 }) {
   try {
+    username = username.toLowerCase();
+    password = password.toLowerCase();
+    if (email) {
+      email = email.toLowerCase();
+    }
     const result_max_id = await db.query("SELECT max(id) as max_id FROM users");
     const max_id = Number(result_max_id.rows[0]["max_id"]);
     const result = await db.query(
@@ -32,6 +37,10 @@ async function signup({
 }
 
 async function isAuth(session, username, password) {
+  if (username && password) {
+    username = username.toLowerCase();
+    password = password.toLowerCase();
+  }
   if (session.username) {
     return {
       login: true,

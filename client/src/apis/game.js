@@ -67,7 +67,7 @@ export const cardSelected = async (body) => {
 };
 
 export const getAllCards = async () => {
-  const res = await axios.get(`http://${serverAddress}/api/v1/game/cards`, {
+  const res = await axios.get(`http://${serverAddress}/api/v1/game/allcards`, {
     ...commonAttrs,
   });
   return res;

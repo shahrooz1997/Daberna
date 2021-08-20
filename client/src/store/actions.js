@@ -10,8 +10,8 @@ export const userLogout = () => ({
   payload: {},
 });
 
-export const getCards = (cards) => ({
-  type: actions.GET_CARDS,
+export const getAllCards = (cards) => ({
+  type: actions.GET_ALL_CARDS,
   payload: {
     cards,
   },

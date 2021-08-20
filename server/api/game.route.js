@@ -73,6 +73,26 @@ router.get("/cards", gameParticipant, async (req, res) => {
   }
 });
 
+router.get("/allcards", gameParticipant, async (req, res) => {
+  try {
+    const result = await gameService.getAllCards(req.session);
+    if (result.cards.length !== 0) {
+      res.status(200).json({
+        cards: result.cards,
+      });
+    } else {
+      res.status(403).json({
+        msg: "No card is available",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
+
 router.post("/card", gameParticipant, async (req, res) => {
   try {
     const result = gameService.selectCard(

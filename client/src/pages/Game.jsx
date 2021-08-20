@@ -57,8 +57,6 @@ const Game = () => {
 
   useEffect(() => {
     async function f() {
-      console.log("TTTT");
-      console.log(audio);
       if (silent && audio) {
         audio.pause();
       }

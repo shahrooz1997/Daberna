@@ -35,7 +35,7 @@ module.exports = (app) => {
     ws.on("message", () => {});
     ws.on("close", () => {
       console.log(
-        `number WebSocket was closed for user ${req.session.username}`
+        `available_cards WebSocket was closed for user ${req.session.username}`
       );
     });
   });

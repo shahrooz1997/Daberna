@@ -59,6 +59,15 @@ class Game {
     }
     return result.rows[0].numbers;
   }
+  async getAllCards() {
+    const result = await db.query(
+      `SELECT id, numbers FROM cards where id in (${this.cards.join(",")})`
+    );
+    if (result.rows.length === 0) {
+      console.log("No available card was found");
+    }
+    return result.rows;
+  }
   async getAvailableCards() {
     if (this.availableCards.length === 0) {
       console.log("There is no card available");
@@ -76,6 +85,7 @@ class Game {
   }
   subscribeAvailableCards(username, ws) {
     this.availableCardsSubscribers[username] = ws;
+    ws.send(this.availableCards.join());
   }
   selectCard(username, cardId) {
     this.userSelectedCard[username] = cardId;

@@ -28,7 +28,7 @@ const Info = (props) => {
       </div>
 
       <div>
-        <h3>Users:</h3>
+        <h3>Users({users.length}):</h3>
         {users.map((user, index, array) => {
           return (
             <span key={user}>

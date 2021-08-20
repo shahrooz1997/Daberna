@@ -8,7 +8,7 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case actions.GET_CARDS:
+    case actions.GET_ALL_CARDS:
       return { ...state, cards: action.payload.cards };
 
     case actions.SELECT_CARD:

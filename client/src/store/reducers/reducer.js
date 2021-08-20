@@ -27,7 +27,7 @@ const reducer = (state = initialState, action) => {
       return state;
     case actions.USER_LOGOUT:
       return state;
-    case actions.GET_CARDS:
+    case actions.GET_ALL_CARDS:
       return {
         ...state,
         cards: [...state.cards, get_add_cards(action.payload.cards)],
