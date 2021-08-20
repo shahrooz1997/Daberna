@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import * as userApi from "../apis/user";
 
 const Header = ({ homeLogIn, empty }) => {
@@ -89,9 +90,11 @@ const Header = ({ homeLogIn, empty }) => {
             >
               Login
             </button>
+            <Link to={"signup"}>
             <button className="btn btn-warning ms-2" type="submit">
               Sign Up
             </button>
+            </Link>
           </form>
         )}
         {!empty && !isLoading && loggedIn && (
