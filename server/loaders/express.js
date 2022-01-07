@@ -37,7 +37,7 @@ module.exports = ({ app }) => {
         "http://hzare.me:3000",
         "http://34.133.211.59:3000",
         "http://localhost:3000",
-        "http://192.168.1.7:3000",
+        "http://192.168.0.10:3000",
       ],
       methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
       credentials: true,

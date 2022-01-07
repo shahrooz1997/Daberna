@@ -5,7 +5,7 @@ const fs = require("fs");
 const loaders = require("./loaders");
 const config = require("./config");
 
-const app = express();
+// const app = express();
 
 function startServer() {
   const app = express();
