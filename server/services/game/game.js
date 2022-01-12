@@ -6,6 +6,7 @@ class Game {
   constructor() {
     this.id = uid(5);
     this.nums = shuffle(1, 90);
+    console.log(this.nums);
     this.drawnIndex = 0;
     this.users = []; // An array of user ids participating in this game
     this.usernameWs = {};
@@ -16,6 +17,8 @@ class Game {
     this.availableCards = [];
     this.numberInterval = null;
     this.userSelectedCard = {};
+    this.claimers = [];
+    this.winClaimed = false;
   }
 
   addUser(username) {
@@ -106,15 +109,22 @@ class Game {
   }
   start() {
     this.state = "paly";
-    const num = this.draw();
-    if (num == -1) {
-      clearInterval(this.numberInterval);
-    }
     console.log(this.drawnIndex);
-    if (this.drawnIndex === 1) {
+    if (this.drawnIndex === 0) {
       // The first draw
+      const num = this.draw();
+      console.log("SSS");
+      console.log(num);
+      if (num == -1) {
+        clearInterval(this.numberInterval);
+      }
       for (const user in this.numberSubscribers) {
-        this.numberSubscribers[user].send(num);
+        this.numberSubscribers[user].send(
+          JSON.stringify({
+            type: "number",
+            value: num,
+          })
+        );
       }
     }
     this.numberInterval = setInterval(() => {
@@ -123,7 +133,12 @@ class Game {
         clearInterval(this.numberInterval);
       }
       for (const user in this.numberSubscribers) {
-        this.numberSubscribers[user].send(num);
+        this.numberSubscribers[user].send(
+          JSON.stringify({
+            type: "number",
+            value: num,
+          })
+        );
       }
     }, 2500);
   }
@@ -134,15 +149,93 @@ class Game {
   destroy() {
     clearInterval(this.numberInterval);
   }
-  async checkWin(cardId) {
+  async checkWin(cardId, startIndex = this.drawnIndex) {
     const cardNumsArr = await this.getCardNums(cardId);
     const cardNums = cardNumsArr.map((arr) => arr[1]);
-    for (let i = this.drawnIndex; i < this.nums.length; i++) {
+    for (let i = startIndex; i < this.nums.length; i++) {
       if (cardNums.indexOf(this.nums[i]) !== -1) {
         return false;
       }
     }
     return true;
+  }
+  claimWin(username, cardId) {
+    this.claimers.push([username, cardId]);
+    console.log(2222);
+    console.log(this.claimers);
+    if (this.winClaimed === false) {
+      this.winClaimed = true;
+      this.pause();
+      // Send out the claim to the users
+      for (const user in this.numberSubscribers) {
+        this.numberSubscribers[user].send(
+          JSON.stringify({
+            type: "win",
+            value: "evaluating",
+          })
+        );
+      }
+      setTimeout(async () => {
+        const res = await Promise.all(
+          this.claimers.map(async (claimer) => {
+            return this.checkWin(claimer[1]);
+          })
+        );
+        this.claimers = this.claimers.filter((claimer, index) => res[index]);
+        console.log(1111);
+        console.log(this.claimers);
+        if (this.claimers.length === 0) {
+          // Send out game continue
+          for (const user in this.numberSubscribers) {
+            this.numberSubscribers[user].send(
+              JSON.stringify({
+                type: "nowin",
+                value: "continue",
+              })
+            );
+          }
+          this.winClaimed = false;
+          setTimeout(() => {
+            this.start();
+          }, 2000);
+
+          return;
+        }
+        var tempDrawnIndex = this.drawnIndex;
+        while (true) {
+          tempDrawnIndex -= 1;
+
+          const res = await Promise.all(
+            this.claimers.map(async (claimer) => {
+              return this.checkWin(claimer[1]);
+            })
+          );
+          var toBeRemovedIndex = res.map((v, index) => {
+            if (v) {
+              return index;
+            } else {
+              return -1;
+            }
+          });
+          toBeRemovedIndex = toBeRemovedIndex.filter((i) => i !== -1);
+          if (toBeRemovedIndex.length === this.claimers.length) {
+            // Send out the winners
+            for (const user in this.numberSubscribers) {
+              this.numberSubscribers[user].send(
+                JSON.stringify({
+                  type: "winners",
+                  value: this.claimers,
+                })
+              );
+            }
+            return;
+          }
+          this.claimers = this.claimers.filter(
+            (claimer, index) => toBeRemovedIndex.indexOf(index) !== -1
+          );
+        }
+      }, 5000);
+    }
   }
 }
 

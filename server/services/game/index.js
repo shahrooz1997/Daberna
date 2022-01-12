@@ -48,8 +48,9 @@ async function createGame(session) {
 
 async function hasWon(session) {
   const game = games[session.gameId];
+  game.claimWin(session.username, session.cardId);
   return {
-    win: await game.checkWin(session.cardId),
+    status: "success",
   };
 }
 

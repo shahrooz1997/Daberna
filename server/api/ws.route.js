@@ -40,6 +40,16 @@ module.exports = (app) => {
     });
   });
 
+  router.ws("/win", (ws, req) => {
+    gameService.availableCards(req.session, ws);
+    ws.on("message", () => {});
+    ws.on("close", () => {
+      console.log(
+        `available_cards WebSocket was closed for user ${req.session.username}`
+      );
+    });
+  });
+
   app.use("/ws", authenticate, gameParticipant, router);
   //   app.use("/ws", router);
 };

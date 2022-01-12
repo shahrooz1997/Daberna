@@ -29,6 +29,7 @@ const Game = () => {
   const gameOwner = useSelector((state) => state.game.gameOwner);
   const [luckyNum, setLuckyNum] = useState(-1);
   const [luckyNums, setLuckyNums] = useState(["Start the game"]);
+  const [text, setText] = useState("");
   const [gameStarted, setgameStarted] = useState(false);
   const [silent, setSilent] = useState(true);
   const [audioCtx, setAudioCtx] = useState(null);
@@ -120,14 +121,30 @@ const Game = () => {
       console.log("Connected to numbers WS");
     };
     ws.onmessage = (e) => {
-      if (e.data.type !== "") {
-        setLuckyNum(e.data);
+      console.log("ZZZZZ");
+      console.log(e);
+      const data = JSON.parse(e.data);
+      if (data.type === "number") {
+        setLuckyNum(data.value);
+        console.log("AAAA " + data.value);
+      } else {
+        if (data.type === "win" && data.value === "evaluating") {
+          setText("Game Paused, One user claimed winning. Evaluating...");
+        } else if (data.type === "nowin") {
+          setText("No winner detected. Game will continue in 2 seconds.");
+          setTimeout(() => {
+            setText("");
+          }, 2000);
+        } else if (data.type === "winners") {
+          setText("winners: " + data.value.join(", ").toString());
+        }
       }
     };
-  }, [id, setLuckyNum]);
+  }, [id, setLuckyNum, setText]);
 
   useEffect(() => {
     const makeLuckyNumsArray = () => {
+      console.log("AAAA2");
       if (luckyNum === -1) {
         if (gameStarted) {
           setLuckyNums(["Done"]);
@@ -135,6 +152,7 @@ const Game = () => {
           setLuckyNums(["Start the game"]);
         }
       } else {
+        console.log("AAAA3");
         let newLuckyNums = [];
         let oldLuckyNums = [];
         if (
@@ -193,14 +211,14 @@ const Game = () => {
     try {
       console.log("clicked");
       const res = await gameApi.winGame();
-      if (res.data.win) {
-        console.log("You won");
-        alert("You won");
-      } else {
-        console.log("Cheater!! (:");
-        alert("Cheater!! (:");
-        console.log(res.data);
-      }
+      // if (res.data.status) {
+      //   console.log("You won");
+      //   alert("You won");
+      // } else {
+      //   console.log("Cheater!! (:");
+      //   alert("Cheater!! (:");
+      //   console.log(res.data);
+      // }
     } catch (e) {
       console.log(e);
     }
@@ -223,6 +241,7 @@ const Game = () => {
           })}
         </h2>
       </div>
+      {text !== "" ? <div> {text} </div> : <div></div>}
       {/* <h2 className="text-center">Your cards</h2> */}
       <div className="cards">
         <Card4 id={id} nums={nums} />

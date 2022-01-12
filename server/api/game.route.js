@@ -161,7 +161,7 @@ router.get("/win", gameParticipant, async (req, res) => {
   try {
     const result = await gameService.hasWon(req.session);
     res.status(200).json({
-      win: result.win,
+      status: result.status,
     });
   } catch (err) {
     console.log(err);
