@@ -2,6 +2,7 @@ const userService = require("../../services/user");
 
 module.exports = async (req, res, next) => {
   try {
+    console.log("AAAAA");
     const userRecord = await userService.isAuth(req.session);
     if (userRecord.login) {
       next();

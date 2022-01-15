@@ -67,7 +67,7 @@ const Home = () => {
                 type="text"
                 placeholder="Game id"
                 onChange={(e) => {
-                  setGameid(e.target.value);
+                  setGameid(e.target.value.toLowerCase());
                   // setUsername(e.target.value);
                 }}
               />

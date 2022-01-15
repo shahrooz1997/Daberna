@@ -37,15 +37,20 @@ async function signup({
 }
 
 async function isAuth(session, username, password) {
+  console.log(session, username, password);
   if (username && password) {
     username = username.toLowerCase();
     password = password.toLowerCase();
   }
   if (session.username) {
+    const result = await db.query(
+      "SELECT balance FROM users where username=$1",
+      [session.username]
+    );
     return {
       login: true,
       username: session.username,
-      balance: session.userBalance,
+      balance: result.rows[0].balance,
     };
   } else {
     if (username === undefined || password === undefined) {
@@ -59,12 +64,15 @@ async function isAuth(session, username, password) {
           [username, password]
         );
         if (result.rows.length != 1) {
+          console.log("result.rows.length != 1");
           return {
             login: false,
           };
         } else {
           session.username = result.rows[0].username;
           session.userBalance = parseInt(result.rows[0].balance, 10);
+          console.log("AAAA");
+          console.log(session);
           return {
             login: true,
             username: session.username,

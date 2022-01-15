@@ -136,6 +136,8 @@ const Game = () => {
             setText("");
           }, 2000);
         } else if (data.type === "winners") {
+          console.log("TTTT");
+          console.log(data.value);
           setText("winners: " + data.value.join(", ").toString());
         }
       }

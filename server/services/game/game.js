@@ -19,15 +19,23 @@ class Game {
     this.userSelectedCard = {};
     this.claimers = [];
     this.winClaimed = false;
+    this.gamefee = 1;
+    this.pot = 0;
   }
 
   addUser(username) {
     const userindex = this.users.indexOf(username);
     if (userindex === -1) {
+      if (this.getUserBalance(username) <= this.gamefee) {
+        console.log("Not enough credit");
+        return;
+      }
+      this.updateBalance(username, -1 * this.gamefee);
       this.users.push(username);
       for (const user in this.usernameWs) {
         this.usernameWs[user].send(this.users.join());
       }
+      this.pot += this.gamefee;
     }
   }
   removeUser(username) {
@@ -140,7 +148,7 @@ class Game {
           })
         );
       }
-    }, 2500);
+    }, 4000);
   }
   pause() {
     clearInterval(this.numberInterval);
@@ -165,7 +173,7 @@ class Game {
     console.log(this.claimers);
     if (this.winClaimed === false) {
       this.winClaimed = true;
-      this.pause();
+      clearInterval(this.numberInterval);
       // Send out the claim to the users
       for (const user in this.numberSubscribers) {
         this.numberSubscribers[user].send(
@@ -195,9 +203,11 @@ class Game {
             );
           }
           this.winClaimed = false;
-          setTimeout(() => {
-            this.start();
-          }, 2000);
+          if (this.state === "paly") {
+            setTimeout(() => {
+              this.start();
+            }, 2000);
+          }
 
           return;
         }
@@ -224,9 +234,18 @@ class Game {
               this.numberSubscribers[user].send(
                 JSON.stringify({
                   type: "winners",
-                  value: this.claimers,
+                  value: this.claimers.map((v) => v[0]),
                 })
               );
+            }
+            console.log(this.claimers);
+            this.claimers = this.claimers.map((v) => v[0]);
+            console.log(this.claimers);
+            const winAmount = this.pot / this.claimers.length;
+            console.log(winAmount);
+            for (const user in this.claimers) {
+              console.log(this.claimers[user], winAmount);
+              this.updateBalance(this.claimers[user], winAmount);
             }
             return;
           }
@@ -236,6 +255,32 @@ class Game {
         }
       }, 5000);
     }
+  }
+  async getUserBalance(username) {
+    const result = await db.query(
+      "SELECT balance from users where username = $1",
+      [username]
+    );
+    if (result.rows.length !== 1) {
+      throw new Error(`user with username ${username} does not exist`);
+    }
+    return result.rows[0].balance;
+  }
+  async putUserBalance(username, newBalance) {
+    const result = await db.query(
+      "Update users SET balance = $1 where username = $2",
+      [newBalance, username]
+    );
+    if (result.rowCount !== 1) {
+      throw new Error(`user with username ${username} does not exist`);
+    }
+  }
+  async updateBalance(username, amount) {
+    let balance = await this.getUserBalance(username);
+    balance = parseFloat(balance);
+    console.log(typeof balance);
+    balance += amount;
+    this.putUserBalance(username, balance);
   }
 }
 

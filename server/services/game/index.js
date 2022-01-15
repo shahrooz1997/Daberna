@@ -61,6 +61,7 @@ async function getAvailableCards(session) {
 }
 
 function joinGame(session, gameId) {
+  gameId = gameId.toLowerCase();
   if (session.gameId) {
     removeUserFromGame(session);
   }

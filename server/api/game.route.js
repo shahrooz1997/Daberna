@@ -8,6 +8,7 @@ const router = Router();
 // Create a game.
 router.get("/", async (req, res) => {
   try {
+    console.log("RRRRRR");
     const result = await gameService.createGame(req.session);
     if (result.gameId) {
       res.status(201).json({
@@ -20,6 +21,7 @@ router.get("/", async (req, res) => {
       });
     }
   } catch (err) {
+    console.log("QRTQERQ");
     console.log(err);
     res.status(500).json({
       msg: "There has been an error on the server",

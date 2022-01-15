@@ -35,7 +35,7 @@ module.exports = ({ app }) => {
     cors({
       origin: [
         "http://hzare.me:3000",
-        "http://34.133.211.59:3000",
+        "http://73.128.93.214:3000",
         "http://localhost:3000",
         "http://192.168.0.10:3000",
       ],

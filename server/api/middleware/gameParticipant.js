@@ -2,6 +2,7 @@ const gameService = require("../../services/game");
 
 module.exports = (req, res, next) => {
   try {
+    console.log("QWER");
     if (gameService.hasGame(req.session)) {
       next();
     } else {
