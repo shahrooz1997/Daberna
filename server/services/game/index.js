@@ -1,7 +1,10 @@
 const Game = require("./game");
+const db = require("../../db");
 
 // Todo: persist games
 games = {};
+availableGamesSubscribers = {};
+
 function addGame(game) {
   games[game.id] = game;
 }
@@ -29,13 +32,25 @@ function removeUserFromGame(session) {
   }
 }
 
-async function createGame(session) {
+async function getUserInfo(username) {
+  const result = await db.query(
+    "SELECT firstname, lastname FROM users where username = $1",
+    [username]
+  );
+  if (result.rows.length !== 1) {
+    throw new Error(`User with username ${username} does not exist`);
+  }
+  return result.rows[0];
+}
+
+async function createGame(session, betPerCard = 1) {
   if (session.gameId) {
     removeUserFromGame(session);
   }
-  const game = new Game();
+  const game = new Game(betPerCard, await getUserInfo(session.username));
   await game.fillCards();
   addGame(game);
+  availableGames(null, null, false);
   game.addUser(session.username);
 
   session.gameId = game.id;
@@ -157,6 +172,39 @@ async function getAllCards(session) {
   };
 }
 
+function availableGames(session, ws, newConnection = true) {
+  if (newConnection) {
+    availableGamesSubscribers[session.username] = ws;
+  }
+  ret = [];
+  console.log("availableGames called");
+  for (const game in games) {
+    console.log(games[game]);
+    if (games[game].state === "created") {
+      ret.push({
+        gameid: games[game].id,
+        owner: games[game].owner.firstname + " " + games[game].owner.lastname,
+        bet: games[game].gamefee,
+      });
+    }
+  }
+  if (newConnection) {
+    availableGamesSubscribers[session.username].send(
+      JSON.stringify({ type: "availableGames", payload: { games: ret } })
+    );
+  } else {
+    for (const user in availableGamesSubscribers) {
+      availableGamesSubscribers[user].send(
+        JSON.stringify({ type: "availableGames", payload: { games: ret } })
+      );
+    }
+  }
+}
+
+function availableGamesStop(session, ws) {
+  delete availableGamesSubscribers[session.username];
+}
+
 module.exports = {
   createGame,
   joinGame,
@@ -172,4 +220,6 @@ module.exports = {
   allUserSelectedCard,
   availableCards,
   getAllCards,
+  availableGames,
+  availableGamesStop,
 };

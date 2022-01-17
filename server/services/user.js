@@ -37,7 +37,6 @@ async function signup({
 }
 
 async function isAuth(session, username, password) {
-  console.log(session, username, password);
   if (username && password) {
     username = username.toLowerCase();
     password = password.toLowerCase();

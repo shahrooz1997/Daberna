@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as userApi from "../apis/user";
 
 const Header = ({ homeLogIn, empty }) => {
@@ -8,6 +8,7 @@ const Header = ({ homeLogIn, empty }) => {
   const [loggedIn, setloggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [balance, setBalance] = useState(0);
+  const history = useHistory();
 
   useEffect(() => {
     if (homeLogIn) {
@@ -57,6 +58,10 @@ const Header = ({ homeLogIn, empty }) => {
     }
   };
 
+  const signup = () => {
+    history.push("/signup");
+  };
+
   return (
     <div className="headerContainer bg-dark">
       <div>
@@ -90,11 +95,18 @@ const Header = ({ homeLogIn, empty }) => {
             >
               Login
             </button>
-            <Link to={"signup"}>
-            <button className="btn btn-warning ms-2" type="submit">
+            {/* <Link to={"signup"}> */}
+            <button
+              className="btn btn-warning ms-2"
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                signup();
+              }}
+            >
               Sign Up
             </button>
-            </Link>
+            {/* </Link> */}
           </form>
         )}
         {!empty && !isLoading && loggedIn && (
@@ -105,7 +117,7 @@ const Header = ({ homeLogIn, empty }) => {
             </div>
             <div>
               <button
-                className="form-control me-2 btn btn-danger"
+                className="btn btn-danger m-2 me-2"
                 type="submit"
                 onClick={(e) => {
                   e.preventDefault();

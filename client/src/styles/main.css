@@ -119,3 +119,20 @@ body {
 .gamePageButtons > button {
   flex-basis: 200px;
 }
+
+.gameFlyer {
+  background-color: #ffc1075c;
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  min-width: 29%;
+}
+
+.gameFlyer:hover {
+  background-color: #ffc107ab;
+  cursor: pointer;
+}

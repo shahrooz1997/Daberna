@@ -4,6 +4,7 @@ const initialState = {
   gameid: null,
   gameOwner: false,
   users: [],
+  ws: null,
 };
 
 export default function reducer(state = initialState, action) {
@@ -14,6 +15,8 @@ export default function reducer(state = initialState, action) {
       return { ...state, gameid: action.payload.id };
     case actions.ADD_USER:
       return { ...state, users: [...state.users, action.payload.username] };
+    case actions.SET_WS:
+      return { ...state, ws: action.payload.ws };
     default:
       return state;
   }

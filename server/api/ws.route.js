@@ -50,6 +50,23 @@ module.exports = (app) => {
     });
   });
 
+  router.ws("/", (ws, req) => {
+    console.log(`WS for ${req.session.username} opened`);
+    ws.on("message", (e) => {
+      const data = JSON.parse(e);
+      const type = data.type;
+      console.log(type);
+      if (type === "availableGames") {
+        gameService.availableGames(req.session, ws);
+      } else if (type === "availableGamesStop") {
+        gameService.availableGamesStop(req.session, ws);
+      }
+    });
+    ws.on("close", () => {
+      console.log(`ONE WebSocket from ${req.session.username} closed`);
+    });
+  });
+
   app.use("/ws", authenticate, gameParticipant, router);
   //   app.use("/ws", router);
 };

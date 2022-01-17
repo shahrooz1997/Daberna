@@ -3,7 +3,7 @@ const uid = require("../utils/uid");
 const db = require("../../db");
 
 class Game {
-  constructor() {
+  constructor(betPerCard, owner) {
     this.id = uid(5);
     this.nums = shuffle(1, 90);
     console.log(this.nums);
@@ -19,8 +19,9 @@ class Game {
     this.userSelectedCard = {};
     this.claimers = [];
     this.winClaimed = false;
-    this.gamefee = 1;
+    this.gamefee = betPerCard;
     this.pot = 0;
+    this.owner = owner;
   }
 
   addUser(username) {

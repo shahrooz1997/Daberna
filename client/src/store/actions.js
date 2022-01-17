@@ -63,3 +63,10 @@ export const addUser = (username) => ({
     username,
   },
 });
+
+export const setWs = (ws) => ({
+  type: actions.SET_WS,
+  payload: {
+    ws,
+  },
+});

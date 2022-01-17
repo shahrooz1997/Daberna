@@ -121,8 +121,6 @@ const Game = () => {
       console.log("Connected to numbers WS");
     };
     ws.onmessage = (e) => {
-      console.log("ZZZZZ");
-      console.log(e);
       const data = JSON.parse(e.data);
       if (data.type === "number") {
         setLuckyNum(data.value);
@@ -275,6 +273,7 @@ const Game = () => {
           I Win
         </button>
       </div>
+      <div className="w-100 p-3"></div>
     </div>
   );
 };

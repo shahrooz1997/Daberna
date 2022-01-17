@@ -9,10 +9,14 @@ let commonAttrs = {
   withCredentials: true,
 };
 
-export const createGame = async () => {
-  const res = await axios.get(`http://${serverAddress}/api/v1/game`, {
-    ...commonAttrs,
-  });
+export const createGame = async (betPerCard) => {
+  const res = await axios.post(
+    `http://${serverAddress}/api/v1/game`,
+    { betPerCard },
+    {
+      ...commonAttrs,
+    }
+  );
   return res;
 };
 

@@ -6,10 +6,12 @@ const gameService = require("../services/game");
 const router = Router();
 
 // Create a game.
-router.get("/", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    console.log("RRRRRR");
-    const result = await gameService.createGame(req.session);
+    const result = await gameService.createGame(
+      req.session,
+      req.body.betPerCard
+    );
     if (result.gameId) {
       res.status(201).json({
         gameId: result.gameId,
