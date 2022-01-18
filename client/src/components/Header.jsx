@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import * as userApi from "../apis/user";
+import * as actions from "../store/actions";
+import { useDispatch, useSelector } from "react-redux";
 
-const Header = ({ homeLogIn, empty }) => {
+const Header = ({ empty }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setloggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [balance, setBalance] = useState(0);
   const history = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (homeLogIn) {
-      homeLogIn(loggedIn);
+    if (loggedIn) {
+      dispatch(actions.userLogin());
+    } else {
+      dispatch(actions.userLogout());
     }
-  }, [homeLogIn, loggedIn]);
+  }, [loggedIn]);
 
   useEffect(() => {
     (async function () {

@@ -35,10 +35,10 @@ const Game = () => {
   const [audioCtx, setAudioCtx] = useState(null);
   const [audio, setAudio] = useState(null);
   const [gainNode, setGainNode] = useState(null);
-  const { id: pId } = useParams();
-  if (id === null) {
-    id = pId;
-  }
+  // const { id: pId } = useParams();
+  // if (id === null) {
+  //   id = pId;
+  // }
 
   useEffect(() => {
     if (!silent && audio === null) {
@@ -104,16 +104,16 @@ const Game = () => {
   };
 
   useEffect(() => {
-    const cardSelected = async () => {
-      try {
-        const res = await gameApi.cardSelected({
-          cardId: id,
-        });
-      } catch (e) {
-        console.log("gameApi.cardSelected err: ", e);
-      }
-    };
-    cardSelected();
+    // const cardSelected = async () => {
+    //   try {
+    //     const res = await gameApi.cardSelected({
+    //       cardId: id,
+    //     });
+    //   } catch (e) {
+    //     console.log("gameApi.cardSelected err: ", e);
+    //   }
+    // };
+    // cardSelected();
     const ws = new WebSocket(
       `ws://${process.env.REACT_APP_SERVER_ADDRESS}/api/v1/ws/number`
     );

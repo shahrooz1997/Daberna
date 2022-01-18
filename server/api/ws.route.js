@@ -53,20 +53,34 @@ module.exports = (app) => {
   router.ws("/", (ws, req) => {
     console.log(`WS for ${req.session.username} opened`);
     ws.on("message", (e) => {
-      const data = JSON.parse(e);
-      const type = data.type;
-      console.log(type);
-      if (type === "availableGames") {
-        gameService.availableGames(req.session, ws);
-      } else if (type === "availableGamesStop") {
-        gameService.availableGamesStop(req.session, ws);
-      }
+      req.session.reload(async (err) => {
+        if (err) {
+          console.log("req.session.reload error");
+          return;
+        }
+        const data = JSON.parse(e);
+        const type = data.type;
+        console.log(
+          `ws rec message type is ${type} from user ${req.session.username}`
+        );
+        if (type === "availableGames") {
+          gameService.availableGames(req.session, ws);
+        } else if (type === "availableGamesStop") {
+          gameService.availableGamesStop(req.session, ws);
+        } else if (type === "availableCards") {
+          await gameService.getAllCards(req.session, ws);
+          gameService.availableCards(req.session, ws);
+        } else if (type === "availableCardsStop") {
+          gameService.availableCardsStop(req.session, ws);
+        }
+      });
     });
     ws.on("close", () => {
       console.log(`ONE WebSocket from ${req.session.username} closed`);
     });
   });
 
-  app.use("/ws", authenticate, gameParticipant, router);
+  // app.use("/ws", authenticate, gameParticipant, router);
+  app.use("/ws", authenticate, router);
   //   app.use("/ws", router);
 };

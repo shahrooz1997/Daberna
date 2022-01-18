@@ -1,6 +1,6 @@
 import * as actions from "../store/actions";
 
-export default (dispatch) => {
+const connectWS = (dispatch) => {
   const ws = new WebSocket(
     `ws://${process.env.REACT_APP_SERVER_ADDRESS}/api/v1/ws/`
   );
@@ -8,7 +8,10 @@ export default (dispatch) => {
     console.log("WS connected");
   };
   ws.onclose = () => {
-    dispatch(actions.setWs(null));
+    setTimeout(() => {
+      dispatch(actions.setWs(null));
+    }, 500);
+
     console.log(`WebSocket closed`);
   };
   // ws.onmessage = (e) => {
@@ -35,4 +38,53 @@ export const isReady = (ws) => {
       count++;
     }, 200);
   });
+};
+
+export default async (
+  ws,
+  dispatch,
+  messageHandler,
+  startMessage = {},
+  endMessage = {}
+) => {
+  if (ws === null) {
+    // Connect the websocket
+    dispatch(actions.setWs(connectWS(dispatch)));
+  } else {
+    // Setup the websocket message handler
+    ws.onmessage = messageHandler;
+    // Wait for the WS to be open
+    if (ws.readyState !== WebSocket.OPEN) {
+      try {
+        await isReady(ws);
+        // Send a message
+        // console.log("M sent");
+        ws.send(JSON.stringify(startMessage));
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      // Send a message
+      // console.log("M sent");
+      ws.send(JSON.stringify(startMessage));
+    }
+  }
+  return async () => {
+    if (ws !== null) {
+      if (ws.readyState !== WebSocket.OPEN) {
+        try {
+          await isReady(ws);
+          // Send a message
+          // console.log("M not sent");
+          ws.send(JSON.stringify(endMessage));
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        // Send a message
+        // console.log("M not sent");
+        ws.send(JSON.stringify(endMessage));
+      }
+    }
+  };
 };

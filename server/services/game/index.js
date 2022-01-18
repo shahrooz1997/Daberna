@@ -56,6 +56,8 @@ async function createGame(session, betPerCard = 1) {
   session.gameId = game.id;
   session.gameOwner = true;
 
+  console.log(`game with id ${game.id} created`);
+
   return {
     gameId: session.gameId,
   };
@@ -165,11 +167,17 @@ function availableCards(session, ws) {
   game.subscribeAvailableCards(session.username, ws);
 }
 
-async function getAllCards(session) {
+function availableCardsStop(session, ws) {
   const game = games[session.gameId];
-  return {
-    cards: await game.getAllCards(),
-  };
+  game.unsubscribeAvailableCards(session.username);
+}
+
+async function getAllCards(session, ws) {
+  const game = games[session.gameId];
+  if (game) {
+    const cards = await game.getAllCards();
+    ws.send(JSON.stringify({ type: "allCards", payload: { cards } }));
+  }
 }
 
 function availableGames(session, ws, newConnection = true) {
@@ -219,6 +227,7 @@ module.exports = {
   selectCard,
   allUserSelectedCard,
   availableCards,
+  availableCardsStop,
   getAllCards,
   availableGames,
   availableGamesStop,

@@ -97,13 +97,26 @@ class Game {
   }
   subscribeAvailableCards(username, ws) {
     this.availableCardsSubscribers[username] = ws;
-    ws.send(this.availableCards.join());
+    ws.send(
+      JSON.stringify({
+        type: "availableCardsIds",
+        payload: { availableCardsIds: this.availableCards },
+      })
+    );
+  }
+  unsubscribeAvailableCards(username) {
+    delete this.availableCardsSubscribers[username];
   }
   selectCard(username, cardId) {
     this.userSelectedCard[username] = cardId;
     this.availableCards = this.availableCards.filter((id) => id !== cardId);
     for (const user in this.availableCardsSubscribers) {
-      this.availableCardsSubscribers[user].send(this.availableCards.join());
+      this.availableCardsSubscribers[user].send(
+        JSON.stringify({
+          type: "availableCardsIds",
+          payload: { availableCardsIds: this.availableCards },
+        })
+      );
     }
   }
 

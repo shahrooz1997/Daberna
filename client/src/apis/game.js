@@ -59,7 +59,7 @@ export const winGame = async () => {
   return res;
 };
 
-export const cardSelected = async (body) => {
+export const selectCard = async (body) => {
   const res = await axios.post(
     `http://${serverAddress}/api/v1/game/card`,
     body,
@@ -76,3 +76,14 @@ export const getAllCards = async () => {
   });
   return res;
 };
+
+// export const selectCard = async (body) => {
+//   const res = await axios.post(
+//     `http://${serverAddress}/api/v1/game/selectcard`,
+//     body,
+//     {
+//       ...commonAttrs,
+//     }
+//   );
+//   return res;
+// };
