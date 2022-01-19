@@ -20,15 +20,18 @@ function removeUserFromGame(session) {
   if (session.gameId) {
     if (!games[session.gameId]) {
       delete session.gameId;
+      delete session.cardId;
       return;
       //   throw new Error(`Game with id ${session.gameId} does not exist`);
     }
     games[session.gameId].removeUser(session.username);
-    if (games[session.gameId].users.length === 0) {
+    if (Object.keys(games[session.gameId].users).length === 0) {
       games[session.gameId].destroy();
       delete games[session.gameId];
+      availableGames(session, null, false);
     }
     delete session.gameId;
+    delete session.cardId;
   }
 }
 
@@ -50,8 +53,9 @@ async function createGame(session, betPerCard = 1) {
   const game = new Game(betPerCard, await getUserInfo(session.username));
   await game.fillCards();
   addGame(game);
-  availableGames(null, null, false);
+  availableGames(session, null, false);
   game.addUser(session.username);
+  game.users[session.username] = true;
 
   session.gameId = game.id;
   session.gameOwner = true;
@@ -97,6 +101,9 @@ function joinGame(session, gameId) {
   game.addUser(session.username);
 
   session.gameId = game.id;
+  if ("cardId" in session) {
+    delete session["cardId"];
+  }
   session.gameOwner = false;
 
   return {
@@ -110,14 +117,31 @@ function getUsernames(session, ws) {
 
   game.usernameWs[session.username] = ws;
 
-  return {
-    users: game.users,
-  };
+  ws.send(JSON.stringify({ type: "users", payload: { users: game.users } }));
 }
 
 function subscribeNumbers(session, ws) {
   const game = games[session.gameId];
-  game.addNumberSubscribers(session.username, ws);
+  if (game) {
+    game.addNumberSubscribers(session.username, ws);
+  } else {
+    if ("cardId" in session) {
+      delete session["cardId"];
+    }
+  }
+}
+
+function unsubscribeNumbers(session, ws) {
+  const game = games[session.gameId];
+  if (game) {
+    console.log("game.removeNumberSubscribers(session.username);");
+    game.removeNumberSubscribers(session.username);
+  } else {
+    if ("cardId" in session) {
+      delete session["cardId"];
+    }
+    console.log("game.removeNumberSubscribers333333333session.username);");
+  }
 }
 
 function startGame(session) {
@@ -128,9 +152,19 @@ function startGame(session) {
   }
 
   const game = games[session.gameId];
-  game.start();
+  if (!game) {
+    return {
+      start: false,
+    };
+  }
+
+  const status = game.start();
+  if (status) {
+    availableGames(session, null, false);
+  }
+
   return {
-    start: true,
+    start: status,
   };
 }
 
@@ -148,12 +182,23 @@ function pauseGame(session) {
   };
 }
 
-function selectCard(session, cardId) {
+async function selectCard(session, cardId) {
   const game = games[session.gameId];
+  if (game && session.cardId && cardId === -1) {
+    return {
+      refresh: true,
+      cardId: session.cardId,
+      gameOwner: session.gameOwner,
+      gameid: session.gameId,
+      bet: game.gamefee,
+      nums: await game.getCardNums(session.cardId),
+    };
+  }
   session.cardId = cardId;
-  game.selectCard(session.username, cardId);
+  const status = game.selectCard(session.username, cardId);
   return {
-    selected: true,
+    refresh: false,
+    selected: status,
   };
 }
 
@@ -164,12 +209,33 @@ function allUserSelectedCard(session) {
 
 function availableCards(session, ws) {
   const game = games[session.gameId];
-  game.subscribeAvailableCards(session.username, ws);
+  if (game) {
+    if (session.cardId) {
+      ws.send(
+        JSON.stringify({
+          type: "availableCardsIds",
+          payload: { availableCardsIds: [] },
+        })
+      );
+    } else {
+      game.subscribeAvailableCards(session.username, ws);
+    }
+  } else {
+    if ("cardId" in session) {
+      delete session["cardId"];
+    }
+  }
 }
 
 function availableCardsStop(session, ws) {
   const game = games[session.gameId];
-  game.unsubscribeAvailableCards(session.username);
+  if (game) {
+    game.unsubscribeAvailableCards(session.username);
+  } else {
+    if ("cardId" in session) {
+      delete session["cardId"];
+    }
+  }
 }
 
 async function getAllCards(session, ws) {
@@ -187,7 +253,7 @@ function availableGames(session, ws, newConnection = true) {
   ret = [];
   console.log("availableGames called");
   for (const game in games) {
-    console.log(games[game]);
+    // console.log(games[game]);
     if (games[game].state === "created") {
       ret.push({
         gameid: games[game].id,
@@ -213,6 +279,42 @@ function availableGamesStop(session, ws) {
   delete availableGamesSubscribers[session.username];
 }
 
+function userReady(session) {
+  const game = games[session.gameId];
+  if (game) {
+    game.users[session.username] = true;
+    for (const user in game.usernameWs) {
+      game.usernameWs[user].send(
+        JSON.stringify({
+          type: "users",
+          payload: { users: game.users },
+        })
+      );
+    }
+  } else {
+    if ("cardId" in session) {
+      delete session["cardId"];
+    }
+  }
+}
+
+function wait(session) {
+  const game = games[session.gameId];
+  if (game) {
+    game.pause();
+    setTimeout(() => {
+      game.start();
+    }, 5000);
+  } else {
+    if ("cardId" in session) {
+      delete session["cardId"];
+    }
+  }
+  return {
+    status: true,
+  };
+}
+
 module.exports = {
   createGame,
   joinGame,
@@ -222,6 +324,7 @@ module.exports = {
   hasGame,
   getUsernames,
   subscribeNumbers,
+  unsubscribeNumbers,
   startGame,
   pauseGame,
   selectCard,
@@ -231,4 +334,6 @@ module.exports = {
   getAllCards,
   availableGames,
   availableGamesStop,
+  userReady,
+  wait,
 };

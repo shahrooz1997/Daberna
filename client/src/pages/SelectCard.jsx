@@ -11,9 +11,9 @@ import { useHistory } from "react-router-dom";
 import * as gameApi from "../apis/game";
 
 const SelectCard = () => {
-  const [allCards, setAllCards] = useState([]);
+  const [allCards, setAllCards] = useState(null);
   const [availableCards, setAvailableCards] = useState([]);
-  const [availableCardsIds, setAvailableCardsIds] = useState([]);
+  const [availableCardsIds, setAvailableCardsIds] = useState(null);
   const history = useHistory();
 
   // WebSocket
@@ -21,7 +21,7 @@ const SelectCard = () => {
   const ws = useSelector((state) => state.game.ws);
   const loggedIn = useSelector((state) => state.user.isLoggedIn);
   useEffect(() => {
-    if (!loggedIn || availableCardsIds.length !== 0) {
+    if (!loggedIn || availableCardsIds !== null || allCards != null) {
       return;
     }
     const massageHandler = (msg) => {
@@ -58,7 +58,7 @@ const SelectCard = () => {
   ]);
 
   useEffect(() => {
-    if (allCards.length === 0 || availableCardsIds.length === 0) {
+    if (allCards === null || availableCardsIds === null) {
       return;
     }
     (function () {
@@ -71,7 +71,6 @@ const SelectCard = () => {
         }
       }
       setAvailableCards(cards);
-      // setCards(e.data.split(","));
     })();
   }, [allCards, availableCardsIds, setAvailableCards]);
 
@@ -87,8 +86,8 @@ const SelectCard = () => {
 
   return (
     <div>
-      <Header />
-      <Info />
+      <Header updateInfo={false} />
+      <Info hasStarted={false} updateInfo={false} />
       <div>
         <div className="cards">
           <h2 className="text-center">Select a card</h2>

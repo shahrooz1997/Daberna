@@ -4,7 +4,7 @@ import * as userApi from "../apis/user";
 import * as actions from "../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 
-const Header = ({ empty }) => {
+const Header = ({ empty, updateInfo }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setloggedIn] = useState(false);
@@ -34,7 +34,7 @@ const Header = ({ empty }) => {
       }
       setIsLoading(false);
     })();
-  }, []);
+  }, [updateInfo]);
 
   const login = async () => {
     try {

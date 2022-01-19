@@ -70,8 +70,6 @@ async function isAuth(session, username, password) {
         } else {
           session.username = result.rows[0].username;
           session.userBalance = parseInt(result.rows[0].balance, 10);
-          console.log("AAAA");
-          console.log(session);
           return {
             login: true,
             username: session.username,

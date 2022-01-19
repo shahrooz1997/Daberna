@@ -8,7 +8,7 @@ class Game {
     this.nums = shuffle(1, 90);
     console.log(this.nums);
     this.drawnIndex = 0;
-    this.users = []; // An array of user ids participating in this game
+    this.users = {}; // An array of user ids participating in this game
     this.usernameWs = {};
     this.numberSubscribers = {};
     this.availableCardsSubscribers = {};
@@ -25,24 +25,29 @@ class Game {
   }
 
   addUser(username) {
-    const userindex = this.users.indexOf(username);
-    if (userindex === -1) {
+    if (!(username in this.users)) {
       if (this.getUserBalance(username) <= this.gamefee) {
         console.log("Not enough credit");
         return;
       }
       this.updateBalance(username, -1 * this.gamefee);
-      this.users.push(username);
+      this.users[username] = false;
       for (const user in this.usernameWs) {
-        this.usernameWs[user].send(this.users.join());
+        this.usernameWs[user].send(
+          JSON.stringify({ type: "users", payload: { users: this.users } })
+        );
       }
-      this.pot += this.gamefee;
+      this.pot += parseInt(this.gamefee);
     }
   }
   removeUser(username) {
-    const userindex = this.users.indexOf(username);
-    if (userindex !== -1) {
-      this.users.splice(userindex, 1);
+    if (username in this.users) {
+      delete this.users[username];
+      for (const user in this.usernameWs) {
+        this.usernameWs[user].send(
+          JSON.stringify({ type: "users", payload: { users: this.users } })
+        );
+      }
     }
   }
   allUserSelectedCard() {
@@ -81,7 +86,7 @@ class Game {
     return result.rows;
   }
   async getAvailableCards() {
-    if (this.availableCards.length === 0) {
+    if (this.availableCards.length === 0 || this.state !== "created") {
       console.log("There is no card available");
       return [];
     }
@@ -108,6 +113,16 @@ class Game {
     delete this.availableCardsSubscribers[username];
   }
   selectCard(username, cardId) {
+    if (
+      this.availableCards.find((v) => {
+        if (v == cardId) {
+          return true;
+        }
+        return false;
+      }) === undefined
+    ) {
+      return false;
+    }
     this.userSelectedCard[username] = cardId;
     this.availableCards = this.availableCards.filter((id) => id !== cardId);
     for (const user in this.availableCardsSubscribers) {
@@ -118,6 +133,7 @@ class Game {
         })
       );
     }
+    return true;
   }
 
   draw() {
@@ -128,26 +144,52 @@ class Game {
   }
   addNumberSubscribers(username, ws) {
     this.numberSubscribers[username] = ws;
+    if (this.drawnIndex !== 0) {
+      ws.send(
+        JSON.stringify({
+          type: "number",
+          payload: { number: this.nums[this.drawnIndex - 1] },
+        })
+      );
+    }
+  }
+  removeNumberSubscriber(username, ws) {
+    delete this.numberSubscribers[username];
   }
   start() {
+    for (const user in this.users) {
+      if (!this.users[user]) {
+        return false;
+      }
+    }
+
+    this.availableCards = [];
     this.state = "paly";
     console.log(this.drawnIndex);
-    if (this.drawnIndex === 0) {
-      // The first draw
-      const num = this.draw();
-      console.log("SSS");
-      console.log(num);
-      if (num == -1) {
-        clearInterval(this.numberInterval);
-      }
-      for (const user in this.numberSubscribers) {
-        this.numberSubscribers[user].send(
-          JSON.stringify({
-            type: "number",
-            value: num,
-          })
-        );
-      }
+    // if (this.drawnIndex === 0) {
+    //   // The first draw
+    //   const num = this.draw();
+    //   console.log("SSS");
+    //   console.log(num);
+    //   if (num == -1) {
+    //     clearInterval(this.numberInterval);
+    //   }
+    //   for (const user in this.numberSubscribers) {
+    //     this.numberSubscribers[user].send(
+    //       JSON.stringify({
+    //         type: "number",
+    //         payload: {number: num},
+    //       })
+    //     );
+    //   }
+    // }
+    for (const user in this.numberSubscribers) {
+      this.numberSubscribers[user].send(
+        JSON.stringify({
+          type: "startgame",
+          payload: {},
+        })
+      );
     }
     this.numberInterval = setInterval(() => {
       const num = this.draw();
@@ -158,14 +200,23 @@ class Game {
         this.numberSubscribers[user].send(
           JSON.stringify({
             type: "number",
-            value: num,
+            payload: { number: num },
           })
         );
       }
     }, 4000);
+    return true;
   }
   pause() {
     clearInterval(this.numberInterval);
+    for (const user in this.numberSubscribers) {
+      this.numberSubscribers[user].send(
+        JSON.stringify({
+          type: "pausegame",
+          payload: {},
+        })
+      );
+    }
     this.state = "pause";
   }
   destroy() {
@@ -193,7 +244,7 @@ class Game {
         this.numberSubscribers[user].send(
           JSON.stringify({
             type: "win",
-            value: "evaluating",
+            payload: {},
           })
         );
       }
@@ -212,7 +263,7 @@ class Game {
             this.numberSubscribers[user].send(
               JSON.stringify({
                 type: "nowin",
-                value: "continue",
+                payload: {},
               })
             );
           }
@@ -225,30 +276,37 @@ class Game {
 
           return;
         }
-        var tempDrawnIndex = this.drawnIndex;
-        while (true) {
+        let tempDrawnIndex = this.drawnIndex;
+        while (tempDrawnIndex > 0) {
           tempDrawnIndex -= 1;
+          console.log(tempDrawnIndex);
 
           const res = await Promise.all(
             this.claimers.map(async (claimer) => {
-              return this.checkWin(claimer[1]);
+              return this.checkWin(claimer[1], tempDrawnIndex);
             })
           );
-          var toBeRemovedIndex = res.map((v, index) => {
+          let toBeRemovedIndex = res.map((v, index) => {
             if (v) {
-              return index;
-            } else {
               return -1;
+            } else {
+              return index;
             }
           });
+          console.log(`to be removed: ${toBeRemovedIndex}`);
+          console.log(res);
+          console.log(toBeRemovedIndex);
           toBeRemovedIndex = toBeRemovedIndex.filter((i) => i !== -1);
+          console.log(toBeRemovedIndex);
+          console.log(this.claimers);
+          console.log("EEEE");
           if (toBeRemovedIndex.length === this.claimers.length) {
             // Send out the winners
             for (const user in this.numberSubscribers) {
               this.numberSubscribers[user].send(
                 JSON.stringify({
                   type: "winners",
-                  value: this.claimers.map((v) => v[0]),
+                  payload: { winners: this.claimers.map((v) => v[0]) },
                 })
               );
             }
@@ -263,9 +321,14 @@ class Game {
             }
             return;
           }
-          this.claimers = this.claimers.filter(
-            (claimer, index) => toBeRemovedIndex.indexOf(index) !== -1
-          );
+          this.claimers = this.claimers.filter((claimer, index) => {
+            console.log("filter");
+            console.log(toBeRemovedIndex);
+            console.log(index);
+            console.log(toBeRemovedIndex.indexOf(index));
+            console.log(toBeRemovedIndex.indexOf(index) !== -1);
+            return toBeRemovedIndex.indexOf(index) === -1;
+          });
         }
       }, 5000);
     }
@@ -278,7 +341,7 @@ class Game {
     if (result.rows.length !== 1) {
       throw new Error(`user with username ${username} does not exist`);
     }
-    return result.rows[0].balance;
+    return parseFloat(result.rows[0].balance);
   }
   async putUserBalance(username, newBalance) {
     const result = await db.query(
@@ -291,7 +354,6 @@ class Game {
   }
   async updateBalance(username, amount) {
     let balance = await this.getUserBalance(username);
-    balance = parseFloat(balance);
     console.log(typeof balance);
     balance += amount;
     this.putUserBalance(username, balance);

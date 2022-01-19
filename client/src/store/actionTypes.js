@@ -12,3 +12,4 @@ export const CREATE_GAME = "CREATE_GAME";
 export const JOIN_GAME = "JOIN_GAME";
 export const ADD_USER = "ADD_USER";
 export const SET_WS = "SET_WS";
+export const RESET_GAME = "RESET_GAME";

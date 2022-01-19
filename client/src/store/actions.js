@@ -43,18 +43,25 @@ export const init = () => ({
   payload: {},
 });
 
-export const createGame = (gameid) => ({
+export const createGame = (gameid, betPerCard) => ({
   type: actions.CREATE_GAME,
   payload: {
     id: gameid,
+    bet: betPerCard,
   },
 });
 
-export const joinGame = (gameid) => ({
+export const joinGame = (gameid, betPerCard) => ({
   type: actions.JOIN_GAME,
   payload: {
     id: gameid,
+    bet: betPerCard,
   },
+});
+
+export const resetGame = () => ({
+  type: actions.RESET_GAME,
+  payload: {},
 });
 
 export const addUser = (username) => ({

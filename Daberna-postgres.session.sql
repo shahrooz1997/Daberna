@@ -37,6 +37,8 @@ CREATE TRIGGER null_email BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE 
 -- users
 INSERT INTO users (id, firstname, lastname, username, email, phone, password) VALUES (1, 'user1', 'Zr', 'user1', 'user1@gmail.com', '+12401111111', '1');
 INSERT INTO users (id, firstname, lastname, username, email, phone, password) VALUES (2, 'user2', 'Lb', 'user2', '', '+12402222222', '2');
+INSERT INTO users (id, firstname, lastname, username, email, phone, password, balance) VALUES (4, 'user3', 'Zr', 'user3', 'user3@gmail.com', '+1240113333', '3', 20);
+
 
 -- Cards
 DROP TABLE cards;

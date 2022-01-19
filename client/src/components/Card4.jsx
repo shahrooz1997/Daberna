@@ -2,6 +2,37 @@ import { useSelector } from "react-redux";
 import CardColumn from "./Card/CardColumn";
 
 function convert_num_array(place_num_array) {
+  if (!place_num_array) {
+    return [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+    ];
+  }
   // init the nums array to empty string
   let nums = [];
   for (var i = 0; i < 27; i++) {

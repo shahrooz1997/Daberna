@@ -83,7 +83,7 @@ const Home = () => {
       // const res = { data: { gameid: "AAAAA" } };
       // setGameid(res.data.gameid);
       console.log(res.data.gameId);
-      dispatch(actions.createGame(res.data.gameId));
+      dispatch(actions.createGame(res.data.gameId, betPerCard));
       history.push("/selectcard");
     } catch (e) {
       console.log(e);
@@ -97,32 +97,35 @@ const Home = () => {
 
   useEffect(() => {
     document.addEventListener("touchstart", enableNoSleep, false);
+    dispatch(actions.resetGame());
   }, []);
 
   return (
     <div className="myhome">
-      <Header />
+      <Header updateInfo={false} />
       {loggedIn ? (
         <div className="gameControl">
           <div>
-            <input
-              className="form-control me-2"
-              type="text"
-              placeholder="Bet per card = 1"
-              onChange={(e) => {
-                setBetPerCard(e.target.value);
-              }}
-            />
-            <button
-              className="btn btn-primary form-control me-2"
-              type="submit"
-              onClick={(e) => {
-                createGame(betPerCard);
-                e.preventDefault();
-              }}
-            >
-              Create A Game
-            </button>
+            <form>
+              <input
+                className="form-control me-2"
+                type="text"
+                placeholder="Bet per card = 1"
+                onChange={(e) => {
+                  setBetPerCard(e.target.value);
+                }}
+              />
+              <button
+                className="btn btn-primary form-control me-2"
+                type="submit"
+                onClick={(e) => {
+                  createGame(betPerCard);
+                  e.preventDefault();
+                }}
+              >
+                Create A Game
+              </button>
+            </form>
           </div>
           <div className="join">
             <p>Or select a game to join.</p>

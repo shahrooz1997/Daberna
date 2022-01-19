@@ -99,19 +99,26 @@ router.get("/allcards", gameParticipant, async (req, res) => {
 
 router.post("/card", gameParticipant, async (req, res) => {
   try {
-    const result = gameService.selectCard(
+    const result = await gameService.selectCard(
       req.session,
       parseInt(req.body.cardId)
     );
 
-    if (result.selected) {
+    if (result.refresh) {
       res.status(200).json({
-        msg: `card ${req.body.cardId} selected`,
+        msg: `user data sent`,
+        ...result,
       });
     } else {
-      res.status(403).json({
-        msg: `couldn't select card ${req.body.cardId}`,
-      });
+      if (result.selected) {
+        res.status(200).json({
+          msg: `card ${req.body.cardId} selected`,
+        });
+      } else {
+        res.status(403).json({
+          msg: `couldn't select card ${req.body.cardId}`,
+        });
+      }
     }
   } catch (err) {
     console.log(err);
@@ -153,6 +160,40 @@ router.post("/pause", gameParticipant, async (req, res) => {
         msg: "Only owner can pause the game",
       });
     }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
+
+router.post("/wait", gameParticipant, async (req, res) => {
+  try {
+    const result = await gameService.wait(req.session);
+    if (result.status) {
+      res.status(200).json({
+        msg: "done",
+      });
+    } else {
+      res.status(200).json({
+        msg: "Cannot wait more",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "There has been an error on the server",
+    });
+  }
+});
+
+router.post("/ready", gameParticipant, async (req, res) => {
+  try {
+    const result = await gameService.userReady(req.session);
+    res.status(200).json({
+      msg: "done",
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({

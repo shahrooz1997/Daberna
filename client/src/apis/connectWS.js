@@ -22,7 +22,7 @@ const connectWS = (dispatch) => {
   return ws;
 };
 
-export const isReady = (ws) => {
+const isReady = (ws) => {
   return new Promise((resolve, reject) => {
     const maxNumberOfAttempts = 50;
 
@@ -40,6 +40,28 @@ export const isReady = (ws) => {
   });
 };
 
+export const sendMsg = async (ws, msg) => {
+  if (ws === null) {
+    console.error("ws is null");
+    return;
+  }
+  // Wait for the WS to be open
+  if (ws.readyState !== WebSocket.OPEN) {
+    try {
+      await isReady(ws);
+      // Send a message
+      // console.log("M sent");
+      ws.send(JSON.stringify(msg));
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    // Send a message
+    // console.log("M sent");
+    ws.send(JSON.stringify(msg));
+  }
+};
+
 export default async (
   ws,
   dispatch,
@@ -53,38 +75,12 @@ export default async (
   } else {
     // Setup the websocket message handler
     ws.onmessage = messageHandler;
-    // Wait for the WS to be open
-    if (ws.readyState !== WebSocket.OPEN) {
-      try {
-        await isReady(ws);
-        // Send a message
-        // console.log("M sent");
-        ws.send(JSON.stringify(startMessage));
-      } catch (e) {
-        console.error(e);
-      }
-    } else {
-      // Send a message
-      // console.log("M sent");
-      ws.send(JSON.stringify(startMessage));
-    }
+
+    await sendMsg(ws, startMessage);
   }
   return async () => {
     if (ws !== null) {
-      if (ws.readyState !== WebSocket.OPEN) {
-        try {
-          await isReady(ws);
-          // Send a message
-          // console.log("M not sent");
-          ws.send(JSON.stringify(endMessage));
-        } catch (e) {
-          console.error(e);
-        }
-      } else {
-        // Send a message
-        // console.log("M not sent");
-        ws.send(JSON.stringify(endMessage));
-      }
+      await sendMsg(ws, endMessage);
     }
   };
 };

@@ -25,7 +25,7 @@ const Signup = () => {
 
   return (
     <div>
-      <Header empty></Header>
+      <Header empty updateInfo={false}></Header>
       <h2 className="text-center p-2">Thank you for signing up</h2>
       <form className="d-flex flex-column p-4 w-50 justify-content-center m-auto">
         <input

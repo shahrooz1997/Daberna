@@ -120,6 +120,10 @@ body {
   flex-basis: 200px;
 }
 
+#rematch-btn {
+  flex-basis: 400px;
+}
+
 .gameFlyer {
   background-color: #ffc1075c;
   cursor: default;

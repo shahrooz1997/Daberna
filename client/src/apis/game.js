@@ -52,6 +52,28 @@ export const pauseGame = async () => {
   return res;
 };
 
+export const wait = async () => {
+  const res = await axios.post(
+    `http://${serverAddress}/api/v1/game/wait`,
+    {},
+    {
+      ...commonAttrs,
+    }
+  );
+  return res;
+};
+
+export const ready = async () => {
+  const res = await axios.post(
+    `http://${serverAddress}/api/v1/game/ready`,
+    {},
+    {
+      ...commonAttrs,
+    }
+  );
+  return res;
+};
+
 export const winGame = async () => {
   const res = await axios.get(`http://${serverAddress}/api/v1/game/win`, {
     ...commonAttrs,

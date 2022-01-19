@@ -12,7 +12,7 @@ const GameFlyer = ({ gameid, creatorName, bet }) => {
     try {
       const res = await gameApi.joinGame(gameid);
       console.log("joined " + gameid);
-      dispatch(actions.joinGame(gameid));
+      dispatch(actions.joinGame(gameid, bet));
       history.push("/selectcard");
     } catch (e) {
       console.log("e");
